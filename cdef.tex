@@ -91,7 +91,7 @@ allows a high degree of control over the blurring.
 
 \section{Direction Search}
 
-The proposed deringing filter is based on the direction of edges,
+The proposed enhancement filter is based on the direction of edges,
 so we will start by describing the direction search. For this, the
 image is first divided into blocks of $8\times8$. The block size
 is chosen to be fine enough to adequately handle non-straight edges,
@@ -159,6 +159,25 @@ signed integer.
 
 Fig. \ref{fig:Example-of-direction} shows an example of a direction
 search for an $8\times8$ block containing a line. 
+The step-by-step process is described in algorithm~\ref{cap:direction-search}.  The search is only
+done for the luma component, and the direction found in this search
+is used for the chroma components.
+
+In total, the search for all 8 directions requires the following
+arithmetic operations:
+\begin{enumerate}
+\item The pixel accumulations in equation (\ref{eq:direction-variance3})
+can be implemented with 294 additions (reusing partial sums of adjacent pixels).
+\item The accumulations result in 90 line sums. Each is squared, requiring 90 multiplies.
+\item Multiplying and summing the squared line sums to compute all $s_d$ values can be
+simplified to 34 multiplies and 82 additions.
+\item The resulting $s_d$ values are compared to find the largest value. 
+\end{enumerate}
+
+The total is 376~additions, 124~multiplies and 7 comparisons. That is about 1/3
+fewer operations than an 8x8 DCT of the same size. The code can be efficiently vectorized,
+with a small penalty due to the diagonal alignment, resulting in a completely similar to
+that of a DCT.
 
 \begin{figure}
 \centering{\includegraphics[width=1.0\columnwidth]{direction}}\caption{Example of direction search for an $8\times8$ block. The patterns
@@ -168,6 +187,43 @@ be selected by the search. Note that the error values $\sigma_{d}$
 shown are never computed in practice (only $s_{d}$ is). \label{fig:Example-of-direction}}
 
 \end{figure}
+
+\begin{algorithm}[t]
+\noindent\fbox{%
+\begin{varwidth}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+\begin{algorithmic}
+\STATE {Initialize all variables to zero}
+\FOR{$d=0$ to $7$}
+  \FOR{$i=0$ to $7$}
+    \FOR{$j=0$ to $7$}
+      \STATE $L \leftarrow \textrm{line\_table}[d][i][j]$
+      \STATE $\textrm{partial}[d][L] \leftarrow \textrm{partial}[d][L] + \lfloor{\textrm{pixel}[i][j] \cdot 2^{8 - \textrm{bitdepth}}\rfloor - 128}$
+      \STATE $\textrm{count}[d][L] \leftarrow \textrm{count}[d][L] + 1$
+    \ENDFOR
+  \ENDFOR
+  \FOR{$L=0$ to $14$}
+    \IF{$\textrm{count}[d][L] > 0$}
+      \STATE $s[d] \leftarrow s[d] + \textrm{partial}[d][L]^2\cdot 840/\textrm{count}[d][L]$
+    \ENDIF
+  \ENDFOR
+\ENDFOR
+\FOR{$d=0$ to $7$}
+  \IF{$s[d] > s[\textrm{best\_}d]$}
+    \STATE $\textrm{best\_}d \leftarrow d$ 
+  \ENDIF
+\ENDFOR
+\STATE $\textrm{direction} \leftarrow \textrm{best\_}d$
+\STATE $\textrm{variance} \leftarrow s[\textrm{best\_}d] - s[(\textrm{best\_}d+4) \mod 8]$
+\end{algorithmic}
+\end{varwidth}% 
+}
+\caption{Direction search. The line\_table[$d$][$i$][$j$] values are the line numbers shown
+in Fig.~\ref{fig:Lines-for-direction}. Note that in a practical implementation,
+the $840/\textrm{count}[d][L]$ term does not need to be computed, since it
+only depends on $d$ and $L$\label{cap:direction-search}.}
+\end{algorithm}
+
+
 
 \newpage
 
@@ -558,71 +614,6 @@ if (bsize == BLOCK\_8X8 || partition != PARTITION\_SPLIT) \{ &  \\ \hline
 
 \section{Superblock Decode Process}
 
-For each 8x8 block within a superblock, the following steps are applied.
-
-\subsection{Direction Search}
-
-The direction search evaluates equation (\ref{eq:direction-variance3})
-for each of the 8 directions, with the $\frac{1}{N_{d,k}}$ factor
-being replaced by an exact 10-bit multiply by $\frac{840}{N_{d,k}}$. The step-by-step process is
-described in algorithm~\ref{cap:direction-search}.  The search is only
-done for the luma component, and the direction found in this search
-will be used for all components.
-
-In total, the search for all 8 directions requires the following
-arithmetic operations:
-\begin{enumerate}
-\item The pixel accumulations in equation (\ref{eq:direction-variance3})
-are 418 adds of 8-bit signed values, with results that fit in 11 bits.
-There's a maximum of 8 values contributing to each sums (there are
-simplifications that can save 128 adds using intermediate sums).
-\item The result of 1) is 90 11-bit partial sums. Each is squared (so 90
-11-bit multiplies), with the result being 21-bit unsigned values.
-Each of these is multiplied by one of eight different 10-bit constants,
-with the result guaranteed to fit in 27 bits. Since some lines use
-the same constant and are eventually added together, only 34 multiplies
-by constants are needed after simplification. 
-\item There are another 86 adds from the results of step 2), resulting in
-8 29-bit unsigned values. There's a maximum of 15 values contributing
-to each of these sums.
-\item The resulting values in 3) are compared to find the largest value. 
-\end{enumerate}
-
-\begin{algorithm}[t]
-\noindent\fbox{%
-\begin{varwidth}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
-\begin{algorithmic}
-\STATE {Initialize all variables to zero}
-\FOR{$d=0$ to $7$}
-  \FOR{$i=0$ to $7$}
-    \FOR{$j=0$ to $7$}
-      \STATE $L \leftarrow \textrm{line\_table}[d][i][j]$
-      \STATE $\textrm{partial}[d][L] \leftarrow \textrm{partial}[d][L] + \lfloor{\textrm{pixel}[i][j] \cdot 2^{8 - \textrm{bitdepth}}\rfloor - 128}$
-      \STATE $\textrm{count}[d][L] \leftarrow \textrm{count}[d][L] + 1$
-    \ENDFOR
-  \ENDFOR
-  \FOR{$L=0$ to $14$}
-    \IF{$\textrm{count}[d][L] > 0$}
-      \STATE $s[d] \leftarrow s[d] + \textrm{partial}[d][L]^2\cdot 840/\textrm{count}[d][L]$
-    \ENDIF
-  \ENDFOR
-\ENDFOR
-\FOR{$d=0$ to $7$}
-  \IF{$s[d] > s[\textrm{best\_}d]$}
-    \STATE $\textrm{best\_}d \leftarrow d$ 
-  \ENDIF
-\ENDFOR
-\STATE $\textrm{direction} \leftarrow \textrm{best\_}d$
-\STATE $\textrm{variance} \leftarrow s[\textrm{best\_}d] - s[(\textrm{best\_}d+4) \mod 8]$
-\end{algorithmic}
-\end{varwidth}% 
-}
-
-\caption{Direction search. The line\_table[$d$][$i$][$j$] values are the line numbers shown
-in Fig.~\ref{fig:Lines-for-direction}. Note that in a practical implementation,
-the $840/\textrm{count}[d][L]$ term does not need to be computed, since it
-only depends on $d$ and $L$\label{cap:direction-search}.}
-\end{algorithm}
 
 \subsection{Strength Computation}
 
