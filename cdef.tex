@@ -18,7 +18,11 @@
 \newfloat{algorithm}{tbp}{loa}
 \floatname{algorithm}{Algorithm}
 
-\ninept\name{Jean-Marc Valin, Steinar Midtskogen}\address{Mozilla Corporation\\Mountain View, CA, USA}
+%\ninept\name{Jean-Marc Valin, Steinar Midtskogen}\address{Mozilla Corporation\\Mountain View, CA, USA}
+\ninept
+\twoauthors
+{Jean-Marc Valin}{Mozilla Corporation\\Mountain View, CA, USA\\\texttt{jmvalin@jmvalin.ca}}
+{Steinar Midtskogen}{CISCO (add more details)}
 
 \makeatletter
 
@@ -157,7 +161,7 @@ Fig. \ref{fig:Example-of-direction} shows an example of a direction
 search for an $8\times8$ block containing a line. 
 
 \begin{figure}
-\centering{\includegraphics[width=0.6\columnwidth]{direction}}\caption{Example of direction search for an $8\times8$ block. The patterns
+\centering{\includegraphics[width=1.0\columnwidth]{direction}}\caption{Example of direction search for an $8\times8$ block. The patterns
 shown are based on the $\mu_{d,k}$ values. In this case, the 45-degree
 direction is the one that minimizes $\sigma_{d}^{2}$, so it would
 be selected by the search. Note that the error values $\sigma_{d}$
@@ -236,8 +240,7 @@ as follows:
 y\left(i, j\right)=round(x(i, j) + g(\sum_{m,n \in R'}{w'}_{m,n}f(x\left(m, n) - x(i,j\right), S', D) + \sum_{m,n \in R''}{w''}_{m,n}f(x\left(m, n) - x(i,j\right), S'', D)))\label{eq:linear-filter2}
 \end{equation}
 
-Both $R'$ and $R''$ depend on the direction identified by the index
-shown in table~\ref{tab:Direction-parameters}.  $R'$ has the following
+Both $R'$ and $R''$ depend on the direction.  $R'$ has the following
 taps (the values for $w'$ are shown for their pixels relative to the filter $x$ to be filtered):
 
 
@@ -433,26 +436,6 @@ index=3, 7:
 
 
 \def\arraystretch{1}
-
-\begin{table}
-\caption{Direction parameters\label{tab:Direction-parameters}}
-\centering{%
-\begin{tabular}{ccrr}
-\hline 
-Index & Direction & $d_{x}$ & $d_{y}$\tabularnewline
-\hline 
-0 & \rotatebox[origin=c]{45}{$\leftrightarrow$} & $1$ & $-1$\tabularnewline
-1 & \rotatebox[origin=c]{22.5}{$\leftrightarrow$} & $1$ & $-\frac{1}{2}$\tabularnewline
-2 & \rotatebox[origin=c]{0}{$\leftrightarrow$} & $1$ & $0$\tabularnewline
-3 & \rotatebox[origin=c]{-22.5}{$\leftrightarrow$} & $1$ & $\frac{1}{2}$\tabularnewline
-4 & \rotatebox[origin=c]{-45}{$\leftrightarrow$} & $1$ & $1$\tabularnewline
-5 & \rotatebox[origin=c]{-65.5}{$\leftrightarrow$} & $\frac{1}{2}$ & $1$\tabularnewline
-6 & \rotatebox[origin=c]{-90}{$\leftrightarrow$} & $0$ & $1$\tabularnewline
-7 & \rotatebox[origin=c]{-112.5}{$\leftrightarrow$} & $-\frac{1}{2}$ & $1$\tabularnewline
-\hline 
-\end{tabular}}
-
-\end{table}
 
 
 \subsection{Valid strengths and damping values}
