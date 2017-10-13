@@ -229,16 +229,15 @@ only depends on $d$ and $L$\label{cap:direction-search}.}
 
 \section{Non-linear Low-pass Filter}
 
-\subsection{Detailed description}
 \label{sec:nonlinear-lowpass}
 The non-linear low-pass is designed to remove coding artifacts without
 blurring sharp edges.  This is achieved by selecting taps based on the
 identified direction and selecting filter strengths along and across
 the direction independently.  The filter can be expressed as
 \begin{equation}
-y\left(i, j\right)=round(x(i, j) + g(\sum_{m,n \in R}w_{m,n}f(x\left(m, n) - x(i,j\right))))\label{eq:linear-filter}
+y\left(i, j\right)=x(i, j) + g\left(\sum_{m,n \in R}w_{m,n}f\left(x\left(m, n) - x(i,j\right)\right)\right)\label{eq:linear-filter}
 \end{equation}
-where $R$ contains pixels in the neighbourhood of $x(i, j)$ with the
+where $R$ contains pixels in the 5x5 neighbourhood of $x(i, j)$ with the
 real-valued, non-zero coefficients $w_{m,n}$, $f$ and $g$ are
 non-linear functions described below, and $round(x)$ rounds $x$ to the
 nearest integer (towards zero).
