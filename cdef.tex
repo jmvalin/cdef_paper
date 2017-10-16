@@ -246,22 +246,17 @@ The function $f$ constrains the difference of the pixel to be filtered
 and a neighbouring pixel.  It takes arguments the difference $d$, a
 strength $S$ and a damping value $D$:
 \begin{equation}
-f\left(d, S, D\right)=\left\{ \begin{array}{ll}
-\min\left(d, \max\left(0, S-\lfloor{\frac{d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\rfloor\right)\right) &, d>=0\\
-\max\left(d, \min\left(0, \lceil{\frac{-d}{2^{D-\lfloor{\log_{2}S}\rfloor}}\rceil-S}\right)\right) &, d<0
+f\left(d, S, D\right)=\left\{\begin{array}{ll}
+\min\left(d, \max\left(0, S-\lfloor{\frac{d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\rfloor\right)\right)\ , d>=0\\
+\max\left(d, \min\left(0, \lceil{\frac{-d}{2^{D-\lfloor{\log_{2}S}\rfloor}}\rceil-S}\right)\right)\ , d<0
 \end{array}\right. \label{eq:constraint-function}
 \end{equation}
+with $D \ge \lfloor\log_2{D}\rfloor$.
 The strength $S$ controls the maximum difference allowed minus a
 ramp-down controlled by $D$.  The effect of $f$ with strengths $1$,
 $2$ and $4$ and a damping value of $5$ is illustrated in
 figure~\ref{fig:constraint-function}.  The function is symmetric for
-$d$ values around $0$ and it can be expressed by the following pseudo
-C code:
-\begin{verbatim}
-   sign(x) = x >= 0 ? 1 : -1
-   f(d, T, D) = sign(d) * min(abs(d), max(0, T - (abs(d) >> (D - floor(log2(T))))))
-\end{verbatim}
-Note that \texttt{D} must be equal to or larger than \texttt{floor(log2(T))}.
+$d$ values around $0$.
 
 
 
@@ -371,66 +366,6 @@ e.g. 4:2:2 video, the filter is disabled for chroma, and the chroma
 primary strength, the chroma skip condition flag and the chroma
 secondary strength are not signaled.
 
-The bitstream syntax is summarized in tables~\ref{header_syntax}, \ref{params_syntax} and \ref{partition_syntax}.
-
-\begin{table}[]
-\centering
-\caption{Uncompressed header syntax}
-\label{header_syntax}
-\begin{tabular}{|l|l|}
-\hline
-... &  \\ \hline
-loop\_filter\_params( ) &  \\ \hline
-\textcolor{red}{cdef\_params()} &  \\ \hline
-quantization\_params( ) &  \\ \hline
-... &  \\ \hline
-\end{tabular}
-\end{table}
-
-\begin{table}[]
-\centering
-\caption{CDEF params syntax}
-\label{params_syntax}
-\begin{tabular}{|l|l|}
-\hline
-\textcolor{red}{cdef\_params()} \{ &  \\ \hline
-\enspace \textcolor{red}{damping} & \textcolor{red}{f(2)} \\ \hline
-\enspace \textcolor{red}{cdef\_bits} & \textcolor{red}{f(2)} \\ \hline
-\enspace \textcolor{red}{for (cdef\_id = 0; cdef\_id < 1 <{<} cdef\_bits; cdef\_id++) \{} &  \\ \hline
-\quad \textcolor{red}{cdef\_luma\_primary\_strength[cdef\_id]} & \textcolor{red}{f(4)} \\ \hline
-\quad \textcolor{red}{cdef\_luma\_skip\_condition[cdef\_id]} & \textcolor{red}{f(1)} \\ \hline
-\quad \textcolor{red}{cdef\_luma\_secondary\_strength[cdef\_id]} & \textcolor{red}{f(2)} \\ \hline
-\quad \textcolor{red}{if (subsampling\_x == subsampling\_y) \{} & \\ \hline
-\enspace \quad \textcolor{red}{cdef\_chroma\_primary\_strength[cdef\_id]} & \textcolor{red}{f(4)} \\ \hline
-\enspace \quad \textcolor{red}{cdef\_chroma\_skip\_condition[cdef\_id]} & \textcolor{red}{f(1)} \\ \hline
-\enspace \quad \textcolor{red}{cdef\_chroma\_secondary\_strength[cdef\_id]} & \textcolor{red}{f(2)} \\ \hline
-\quad \textcolor{red}{\}} & \\ \hline
-\enspace \textcolor{red}{\}} & \\ \hline
-\textcolor{red}{\}} &  \\ \hline
-\end{tabular}
-\end{table}
-
-\begin{table}[]
-\centering
-\caption{Decode partition syntax}
-\label{partition_syntax}
-\begin{tabular}{|l|l|}
-\hline
-... &  \\ \hline
-if (bsize == BLOCK\_8X8 || partition != PARTITION\_SPLIT) \{ &  \\ \hline
-\enspace for (i = 0; i < num8x8; i++) \{ &  \\ \hline
-\quad AbovePartitionContext[c + i] = 15 >{>} b\_width\_log2\_lookup[subsize] &  \\ \hline
-\quad LeftPartitionContext[r + i] = 15 >{>} b\_height\_log2\_lookup[subsize] &  \\ \hline
-\enspace \} &  \\ \hline
-\} &  \\ \hline
-\textcolor{red}{if (bsize == BLOCK\_64X64) \{} & \\ \hline
-\enspace \textcolor{red}{if (!sb\_all\_skip(MiCol, MiRow, 64 / MI\_SIZE)) \{} & \\ \hline
-\quad \textcolor{red}{cdef\_id } & \textcolor{red}{f(cdef\_bits)} \\ \hline
-\enspace \textcolor{red}{\}} & \\ \hline
-\textcolor{red}{\}} & \\ \hline
-... &  \\ \hline
-\end{tabular}
-\end{table}
 
 \section{Superblock Decode Process}
 
@@ -495,8 +430,8 @@ these tools while keeping CDEF enabled may give a better
 compexity/compression trade-off.
 
 Subjective tests have shown a significant
-improvement in quality~\cite{AV1-CLPFVSCDEF} over CLPF which was
-proposed in the early stages of AV1 development~\cite{AV1-CLPF}.
+improvement in quality over CLPF which was
+proposed in the early stages of AV1 development.
 
 
 \section{Conclusion}
