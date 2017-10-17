@@ -18,6 +18,7 @@
 \newfloat{algorithm}{tbp}{loa}
 \floatname{algorithm}{Algorithm}
 
+
 %\ninept\name{Jean-Marc Valin, Steinar Midtskogen}\address{Mozilla Corporation\\Mountain View, CA, USA}
 \ninept
 \twoauthors
@@ -230,25 +231,22 @@ only depends on $d$ and $L$\label{cap:direction-search}.}
 \section{Non-linear Low-pass Filter}
 
 \label{sec:nonlinear-lowpass}
-The non-linear low-pass is designed to remove coding artifacts without
-blurring sharp edges.  This is achieved by selecting taps based on the
-identified direction and selecting filter strengths along and across
-the direction independently.  The filter can be expressed as
+CDEF is based on a non-linear low-pass filter designed to remove coding artifacts without
+blurring sharp edges. This is achieved by selecting taps based on the
+identified direction, but also by preventing excessive blurring when the filter
+is applied across an edge. The filter can be expressed as
 \begin{equation}
-y\left(i, j\right)=x(i, j) + g\left(\sum_{m,n \in R}w_{m,n}f\left(x\left(m, n) - x(i,j\right)\right)\right)\label{eq:linear-filter}
+y\left(i, j\right)=x(i, j) +\!\!\sum_{m,n \in R}w_{d,m,n}f\left(x\left(i+m, j+n) - x(i,j\right)\right)\ ,\label{eq:linear-filter}
 \end{equation}
-where $R$ contains pixels in the 5x5 neighbourhood of $x(i, j)$ with the
-real-valued, non-zero coefficients $w_{m,n}$, $f$ and $g$ are
-non-linear functions described below, and $round(x)$ rounds $x$ to the
-nearest integer (towards zero).
+where $R$ is the set of pixels in the 5x5 neighbourhood of $x(i, j)$ with non-zero weights $w_{d,m,n}$, and $f(\cdot)$
+is a non-linear function. 
 
-The function $f$ constrains the difference of the pixel to be filtered
-and a neighbouring pixel.  It takes arguments the difference $d$, a
-strength $S$ and a damping value $D$:
+The constraint function $f(\cdot)$ operates on the difference between the filtered pixel and each of the
+neighbour pixels. In addition to the difference $d$, it is controlled by a strength $S$ and a damping value $D$:
 \begin{equation}
 f\left(d, S, D\right)=\left\{\begin{array}{ll}
-\min\left(d, \max\left(0, S-\lfloor{\frac{d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\rfloor\right)\right)\ , d>=0\\
-\max\left(d, \min\left(0, \lceil{\frac{-d}{2^{D-\lfloor{\log_{2}S}\rfloor}}\rceil-S}\right)\right)\ , d<0
+\!\!\min\left(d, \max\left(0, S-\left\lfloor{\frac{d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\right\rfloor\right)\right) , d\ge0\\
+\!\!\max\left(d, \min\left(0, \left\lceil{\frac{-d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\right\rceil-S\right)\right) , d<0
 \end{array}\right. \label{eq:constraint-function}
 \end{equation}
 with $D \ge \lfloor\log_2{D}\rfloor$.
