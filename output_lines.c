@@ -86,7 +86,7 @@ int main(int argc, char **argv)
         BASEX+SIZE*(j+0), BASEY+SIZE*(i+1),
         BASEX+SIZE*(j+0), BASEY+SIZE*(i+0)
       );
-      printf("4 1 0 50 -1 0 18 0.0000 4 135 105 %d %d %d\\001\n", TBASEX+SIZE*j, TBASEY+SIZE*i, id);
+      printf("4 1 0 50 -1 0 24 0.0000 4 135 105 %d %d %d\\001\n", TBASEX+SIZE*j, TBASEY+SIZE*i+25, id);
     }
   }
   printf("4 1 0 50 -1 1 30 0.0000 4 135 105 %d %d d\\001\n", (int)(TBASEX+SIZE*3.9)-600, (int)(TBASEY+SIZE*8.2));

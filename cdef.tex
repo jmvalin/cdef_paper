@@ -108,11 +108,11 @@ along a certain direction has a constant value. For each direction,
 we assign a line number $k$ to each pixel, as shown in Fig.~\ref{fig:Lines-for-direction}. 
 
 \begin{figure}
-\centering{\includegraphics[width=0.23\columnwidth]{dlines0}\hspace{.5em}\includegraphics[width=0.23\columnwidth]{dlines1}\hspace{.5em}\includegraphics[width=0.23\columnwidth]{dlines2}\hspace{.5em}\includegraphics[width=0.23\columnwidth]{dlines3}}
+\centering{\includegraphics[width=0.24\columnwidth]{dlines0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines3}}
 
-\vspace{.5em}
+\vspace{.1em}
 
-\centering{\includegraphics[width=0.23\columnwidth]{dlines4}\hspace{.5em}\includegraphics[width=0.23\columnwidth]{dlines5}\hspace{.5em}\includegraphics[width=0.23\columnwidth]{dlines6}\hspace{.5em}\includegraphics[width=0.23\columnwidth]{dlines7}}\caption{Line number $k$ for pixels following direction $d=0:7$ in an $8\times8$
+\centering{\includegraphics[width=0.24\columnwidth]{dlines4}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines5}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines6}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines7}}\caption{Line number $k$ for pixels following direction $d=0:7$ in an $8\times8$
 block.\label{fig:Lines-for-direction}}
 \end{figure}
 
@@ -393,16 +393,7 @@ cases (when the direction index value is odd) some taps in $R'$ and
 $R''$ have the same positions, but their weigths in
 $R'$ and $R''$ are separate.
 
-
-\section{Results}
-
-We tested the deringing filter using the Are We Compressed
-Yet~\cite{AWCY} online testing tool. The results are shown in
-table~\ref{tab:bd-rate} for the objective-1-fast test set.  These
-results reflect the gains in the codebase for git SHA \texttt{e200b28}
-(8th August 2017).
-
-\begin{table}
+\begin{table*}
 \caption{CDEF Bjontegaard-delta~\cite{Testing-draft} rate for
 the objective-1-fast test set in AWCY.\label{tab:bd-rate}}
 \centering{%
@@ -416,7 +407,16 @@ Low-latency, cpu-used=4 & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabula
 \hline 
 \end{tabular}}
 
-\end{table}
+\end{table*}
+
+\section{Results}
+
+We tested the deringing filter using the Are We Compressed
+Yet~\cite{AWCY} online testing tool. The results are shown in
+table~\ref{tab:bd-rate} for the objective-1-fast test set.  These
+results reflect the gains in the codebase for git SHA \texttt{e200b28}
+(8th August 2017).
+
 
 CDEF competes for the same gains as some other coding tools, in
 particular the dual\_filter tool and to a lesser degree motion\_var
