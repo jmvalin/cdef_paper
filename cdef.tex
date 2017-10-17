@@ -221,7 +221,8 @@ shown are never computed in practice (only $s_{d}$ is). \label{fig:Example-of-di
 \caption{Direction search. The line\_table[$d$][$i$][$j$] values are the line numbers shown
 in Fig.~\ref{fig:Lines-for-direction}. Note that in a practical implementation,
 the $840/\textrm{count}[d][L]$ term does not need to be computed, since it
-only depends on $d$ and $L$\label{cap:direction-search}.}
+only depends on $d$ and $L$\label{cap:direction-search}. Some algebraic simplifications are omitted
+for clarity.}
 \end{algorithm}
 
 
@@ -249,19 +250,22 @@ f\left(d, S, D\right)=\left\{\begin{array}{ll}
 \end{equation}
 with $D \ge \lfloor\log_2{D}\rfloor$.
 The strength $S$ controls the maximum difference allowed minus a
-ramp-down controlled by $D$.  The effect of $f$ with strengths $1$,
-$2$ and $4$ and a damping value of $5$ is illustrated in
-figure~\ref{fig:constraint-function}.  The function is symmetric for
-$d$ values around $0$.
+ramp-down controlled by $D$.  Fig.~\ref{fig:constraint-function-strength} illustrates
+the effect of the strength on $f(\cdot)$ and Fig.~\ref{fig:constraint-function-damping}
+illustrates the effect of damping. The function is symmetric for $d$ values around $0$.
 
 
 
 \begin{figure}
-\centering{\includegraphics[width=0.9\columnwidth]{clpf_func}}
-
-\caption{Constraint function\label{fig:constraint-function}}
+\centering{\includegraphics[width=0.9\columnwidth]{strength}}
+\caption{Constraint function for different strength values $S$ (constant $D$).\label{fig:constraint-function-strength}}
 \end{figure}
 
+
+\begin{figure}
+\centering{\includegraphics[width=0.9\columnwidth]{damping}}
+\caption{Constraint function for different damping values $D$ (constant $S$).\label{fig:constraint-function-damping}}
+\end{figure}
 
 
 
