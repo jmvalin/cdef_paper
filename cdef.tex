@@ -380,9 +380,9 @@ luma and chroma.
 The signaled primary strength $S'$ is adjusted for luma using a
 variance $v$ (see algorithm~\ref{cap:direction-search}) for the 8x8 block as follows:
 \begin{equation}
-{S'}_{adj}=\left\{ \begin{array}{ll}
-\lfloor\frac{S' (4 + \min(\lfloor log_2\lfloor\frac{v}{2^{16}}\rfloor \rfloor, 12)) + 8}{16}\rfloor &, v >= 2^{10}\\
-0 &, otherwise
+S^{(p)}_{adj}=\left\{ \begin{array}{ll}
+\left\lfloor\frac{S^{(p)} \left(4 + \min\left(\left\lfloor \log_2\left\lfloor\frac{v}{2^{16}}\right\rfloor\right\rfloor, 12\right)\right) + 8}{16}\right\rfloor &, v \ge 2^{10}\\
+0 &, \textrm{otherwise}
 \end{array}\right. \label{eq:strength-adjustment}
 \end{equation}
 
