@@ -309,6 +309,18 @@ where $a=2$ and $b=4$ for even strengths and $a=3$ and $b=3$ for odd strengths. 
 \caption{Secondary filter taps following direction $d=0:7$.\label{fig:Secondary-filter}}
 \end{figure}
 
+For each 8x8 block to be filtered, the directional filter is applied
+in a single pass using the strengths ${S'}_{adj}$ and ${S''}$ for luma
+or ${S'}$ and ${S''}$ for chroma, and damping value $D$. When
+filtering pixel $(i,j)$, the directional filter may use pixels that
+are outside of the 8x8 block, or even outside of the superblock. If
+the input pixel lies outside of the frame, then the pixel is ignored,
+i.e. $f(d,S,D)=0$. The filter and weights for each direction $d$ are
+described in Section~\ref{sec:nonlinear-lowpass}.  Note that in some
+cases (when the direction index value is odd) some taps in $R'$ and
+$R''$ have the same positions, but their weigths in
+$R'$ and $R''$ are separate.
+
 \subsection{Valid strengths and damping values}
 
 The strengths $S'$ and $S''$ and damping value $D$ must be set high
@@ -329,6 +341,33 @@ $D$ can have the values $7$, $8$, $9$ and $10$.  Picking an optimial
 damping value is less critical for compression gains than picking the
 optimal strengths.  $S'$ and $S''$ are are set independently for
 luma and chroma.
+
+The signaled primary strength $S'$ is adjusted for luma using a
+variance $v$ (see algorithm~\ref{cap:direction-search}) for the 8x8 block as follows:
+\begin{equation}
+{S'}_{adj}=\left\{ \begin{array}{ll}
+\lfloor\frac{S' (4 + \min(\lfloor log_2\lfloor\frac{v}{2^{16}}\rfloor \rfloor, 12)) + 8}{16}\rfloor &, v >= 2^{10}\\
+0 &, otherwise
+\end{array}\right. \label{eq:strength-adjustment}
+\end{equation}
+
+This adjustment is not applied for chroma, nor for the secondary strength $S''$.
+
+\begin{table*}
+\caption{CDEF Bjontegaard-delta~\cite{Testing-draft} rate for
+the objective-1-fast test set in AWCY.\label{tab:bd-rate}}
+\centering{%
+\begin{tabular}{cccccc}
+\hline 
+Bitrate (bpp) & PSNR & CIEDE 2000 & PSNR-HVS & SSIM & MS-SSIM\tabularnewline
+\hline 
+High-latency & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
+Low-latency & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
+Low-latency, cpu-used=4 & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
+\hline 
+\end{tabular}}
+
+\end{table*}
 
 \section{Signaling and Superblocks}
 
@@ -366,52 +405,9 @@ e.g. 4:2:2 video, the filter is disabled for chroma, and the chroma
 primary strength, the chroma skip condition flag and the chroma
 secondary strength are not signaled.
 
+\section{Encoder Search}
 
-\section{Superblock Decode Process}
 
-
-\subsection{Strength Computation}
-
-The signaled primary strength $S'$ is adjusted for luma using a
-variance $v$ (see algorithm~\ref{cap:direction-search}) for the 8x8 block as follows:
-\begin{equation}
-{S'}_{adj}=\left\{ \begin{array}{ll}
-\lfloor\frac{S' (4 + \min(\lfloor log_2\lfloor\frac{v}{2^{16}}\rfloor \rfloor, 12)) + 8}{16}\rfloor &, v >= 2^{10}\\
-0 &, otherwise
-\end{array}\right. \label{eq:strength-adjustment}
-\end{equation}
-
-This adjustment is not applied for chroma, nor for the secondary strength $S''$.
-
-\subsection{Directional Filtering}
-
-For each 8x8 block to be filtered, the directional filter is applied
-in a single pass using the strengths ${S'}_{adj}$ and ${S''}$ for luma
-or ${S'}$ and ${S''}$ for chroma, and damping value $D$. When
-filtering pixel $(i,j)$, the directional filter may use pixels that
-are outside of the 8x8 block, or even outside of the superblock. If
-the input pixel lies outside of the frame, then the pixel is ignored,
-i.e. $f(d,S,D)=0$. The filter and weights for each direction $d$ are
-described in Section~\ref{sec:nonlinear-lowpass}.  Note that in some
-cases (when the direction index value is odd) some taps in $R'$ and
-$R''$ have the same positions, but their weigths in
-$R'$ and $R''$ are separate.
-
-\begin{table*}
-\caption{CDEF Bjontegaard-delta~\cite{Testing-draft} rate for
-the objective-1-fast test set in AWCY.\label{tab:bd-rate}}
-\centering{%
-\begin{tabular}{cccccc}
-\hline 
-Bitrate (bpp) & PSNR & CIEDE 2000 & PSNR-HVS & SSIM & MS-SSIM\tabularnewline
-\hline 
-High-latency & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
-Low-latency & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
-Low-latency, cpu-used=4 & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
-\hline 
-\end{tabular}}
-
-\end{table*}
 
 \section{Results}
 
