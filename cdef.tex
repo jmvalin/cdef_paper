@@ -233,7 +233,9 @@ for clarity.}
 CDEF is based on a non-linear low-pass filter designed to remove coding artifacts without
 blurring sharp edges. This is achieved by selecting taps based on the
 identified direction, but also by preventing excessive blurring when the filter
-is applied across an edge. The filter can be expressed as
+is applied across an edge. The latter is achieved through the use of a non-linear low-pass
+filter that deemphasizes taps that differ too much from the pixel being filtered.
+The non-linear filter can be expressed as
 \begin{equation}
 y\left(i, j\right)=x(i, j) +\!\!\sum_{m,n \in R}w_{d,m,n}f\left(x\left(i+m, j+n) - x(i,j\right)\right)\ ,\label{eq:linear-filter}
 \end{equation}
@@ -241,7 +243,10 @@ where $R$ is the set of pixels in the 5x5 neighbourhood of $x(i, j)$ with non-ze
 is a non-linear function. 
 
 The constraint function $f(\cdot)$ operates on the difference between the filtered pixel and each of the
-neighbour pixels. In addition to the difference $d$, it is controlled by a strength $S$ and a damping value $D$:
+neighbour pixels. For small differences, $f\left(d, S, D\right)=d$, making the filter in
+(\ref{eq:linear-filter}) behave like a linear filter. However, when the difference is large,
+$f\left(d, S, D\right)=0$, which effectively ignores the filter tap.
+The filter is controlled by a strength $S$ and a damping value $D$
 \begin{equation}
 f\left(d, S, D\right)=\left\{\begin{array}{ll}
 \!\!\min\left(d, \max\left(0, S-\left\lfloor{\frac{d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\right\rfloor\right)\right) , d\ge0\\
@@ -363,7 +368,7 @@ Bitrate (bpp) & PSNR & CIEDE 2000 & PSNR-HVS & SSIM & MS-SSIM\tabularnewline
 \hline 
 High-latency & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
 Low-latency & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
-Low-latency, cpu-used=4 & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
+Low-latency, low-complexity & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
 \hline 
 \end{tabular}}
 
