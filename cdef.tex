@@ -91,11 +91,15 @@ direction and 45 degrees off it can be signalled separately, which
 allows a high degree of control over the blurring.
 
 \section{Direction Search}
+\label{sec:direction-search}
 
 The proposed enhancement filter is based on the direction of edges,
-so we will start by describing the direction search. For this, the
-image is first divided into blocks of $8\times8$. The block size
-is chosen to be fine enough to adequately handle non-straight edges,
+so we start by describing the direction search. The search on the
+reconstructed pixels, just after the deblocking is applied. Since
+those pixels are available to the decoder, no signalling is required
+for the directions.
+The direction search operates on $8\times8$ blocks, which is
+fine enough to adequately handle non-straight edges,
 while being large enough to reliably estimate directions when applied
 to a quantized image. Having a constant direction over an $8\times8$
 region also makes vectorization of the filter easier.
@@ -110,7 +114,7 @@ we assign a line number $k$ to each pixel, as shown in Fig.~\ref{fig:Lines-for-d
 \begin{figure}
 \centering{\includegraphics[width=0.24\columnwidth]{dlines0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines3}}
 
-\vspace{.1em}
+\vspace{.5em}
 
 \centering{\includegraphics[width=0.24\columnwidth]{dlines4}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines5}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines6}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines7}}\caption{Line number $k$ for pixels following direction $d=0:7$ in an $8\times8$
 block.\label{fig:Lines-for-direction}}
@@ -272,7 +276,21 @@ illustrates the effect of damping. The function is symmetric for $d$ values arou
 \caption{Constraint function for different damping values $D$ (constant $S$).\label{fig:constraint-function-damping}}
 \end{figure}
 
+\subsection{Primary and Secondary Taps}
 
+The main reason for identifying the direction of the Section~\ref{sec:direction-search} is to
+align the filter taps along that direction to reduce ringing while preserving the directional
+edges or patterns. However, directional filtering alone is sometimes not sufficient to
+sufficiently reduce ringing so we also want to use filter taps on pixels that do not
+lie along the main direction.
+To reduce the risk of blurring, these extra taps are treated more conservatively. For this
+reasons, CDEF defines \textit{primary} taps and \textit{secondary} taps.
+
+\begin{align}
+y\left(i, j\right)=x(i, j) &+ \sum_{m,n \in R^{(p)}}{w}^{(p)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(p)}, D) \\
+                           &+ \sum_{m,n \in R^{(s)}}{w}^{(s)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(s)}, D)
+\label{eq:linear-filter2}
+\end{align}
 
 The function $g$ ensures that the modification $\Delta$ of the pixel
 $x$ to be filtered does not exceed the greatest difference between $x$
@@ -291,9 +309,6 @@ filter taps.  We therefore define \textit{primary taps} in $R'$ and
 \textit{secondary taps} in $R''$ which have their associated strengths
 $S'$ and $S''$ respectively.  To reflect this the filter can be expressed more specifically
 as follows:
-\begin{equation}
-y\left(i, j\right)=round(x(i, j) + g(\sum_{m,n \in R'}{w'}_{m,n}f(x\left(m, n) - x(i,j\right), S', D) + \sum_{m,n \in R''}{w''}_{m,n}f(x\left(m, n) - x(i,j\right), S'', D)))\label{eq:linear-filter2}
-\end{equation}
 
 Both $R'$ and $R''$ depend on the direction.  $R'$ has the following
 taps (the values for $w'$ are shown for their pixels relative to the filter $x$ to be filtered):
@@ -325,6 +340,21 @@ described in Section~\ref{sec:nonlinear-lowpass}.  Note that in some
 cases (when the direction index value is odd) some taps in $R'$ and
 $R''$ have the same positions, but their weigths in
 $R'$ and $R''$ are separate.
+
+\begin{table*}
+\caption{CDEF Bjontegaard-delta~\cite{Testing-draft} rate for
+the objective-1-fast test set in AWCY.\label{tab:bd-rate}}
+\centering{%
+\begin{tabular}{cccccc}
+\hline 
+Bitrate (bpp) & PSNR & CIEDE 2000 & PSNR-HVS & SSIM & MS-SSIM\tabularnewline
+\hline 
+High-latency & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
+Low-latency & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
+Low-latency, low-complexity & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
+\hline 
+\end{tabular}}
+\end{table*}
 
 \subsection{Valid strengths and damping values}
 
@@ -358,21 +388,6 @@ variance $v$ (see algorithm~\ref{cap:direction-search}) for the 8x8 block as fol
 
 This adjustment is not applied for chroma, nor for the secondary strength $S''$.
 
-\begin{table*}
-\caption{CDEF Bjontegaard-delta~\cite{Testing-draft} rate for
-the objective-1-fast test set in AWCY.\label{tab:bd-rate}}
-\centering{%
-\begin{tabular}{cccccc}
-\hline 
-Bitrate (bpp) & PSNR & CIEDE 2000 & PSNR-HVS & SSIM & MS-SSIM\tabularnewline
-\hline 
-High-latency & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
-Low-latency & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
-Low-latency, low-complexity & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
-\hline 
-\end{tabular}}
-
-\end{table*}
 
 \section{Signaling and Superblocks}
 
