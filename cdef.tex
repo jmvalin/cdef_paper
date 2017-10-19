@@ -437,11 +437,21 @@ secondary strength are not signaled.
 \section{Encoder Search}
 
 On the encoder side, the search needs to determine both the frame level parameters
-Based on structural similarity (SSIM) metric~\cite{wang2004image}.
+(preset parameters, number of presets) and the superblock-level preset ID. Assuming
+the presets are already chosen, the ID for each non-skipped superblock is
+chosen by minimizing a distortion metric over the superblock. The simplest error metric
+is the sum of squared error (SSE), defined as $D=\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2$,
+where $\mathbf{s}$ is a vector containing the source (uncoded) pixels for the superblock and
+$\mathbf{d}$ contains the decoded pixels, filtered using a particular preset. While SSE leads
+to good results overall, it sometimes causes excessive smoothing in non-directional textured
+areas (e.g. grass). Instead, we use a modified version of SSE that takes into account
+contrast in a similar way to the structural similarity (SSIM) metric~\cite{wang2004image}. The
+distortion metric is the sum over the superblock of the following $8\times8$ distortion function:
 \begin{equation}
-D_{8x8} = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2\ ,
+D_{8\times8} = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}\cdot\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2\ ,
 \end{equation}
-where $C_1=6.25$ and $C_2=312.5$ for 8-bit depth.
+where $\sigma_s^2$ and $\sigma_d^2$ are the variances of $\mathbf{s}$ and $\mathbf{d}$ over the
+block and the constants are set to $C_1=6.25$ and $C_2=312.5$ for 8-bit depth.
 
 \section{Results}
 
