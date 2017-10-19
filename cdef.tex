@@ -201,30 +201,30 @@ shown are never computed in practice (only $s_{d}$ is). \label{fig:Example-of-di
 \FOR{$d=0$ to $7$}
   \FOR{$i=0$ to $7$}
     \FOR{$j=0$ to $7$}
-      \STATE $L \leftarrow \textrm{line\_table}[d][i][j]$
-      \STATE $\textrm{partial}[d][L] \leftarrow \textrm{partial}[d][L] + \lfloor{\textrm{pixel}[i][j] \cdot 2^{8 - \textrm{bitdepth}}\rfloor - 128}$
-      \STATE $\textrm{count}[d][L] \leftarrow \textrm{count}[d][L] + 1$
+      \STATE $L \leftarrow \mathrm{line\_table}[d][i][j]$
+      \STATE $\mathrm{partial}[d][L] \leftarrow \mathrm{partial}[d][L] + \lfloor{\mathrm{pixel}[i][j] \cdot 2^{8 - \mathrm{bitdepth}}\rfloor - 128}$
+      \STATE $\mathrm{count}[d][L] \leftarrow \mathrm{count}[d][L] + 1$
     \ENDFOR
   \ENDFOR
   \FOR{$L=0$ to $14$}
-    \IF{$\textrm{count}[d][L] > 0$}
-      \STATE $s[d] \leftarrow s[d] + \textrm{partial}[d][L]^2\cdot 840/\textrm{count}[d][L]$
+    \IF{$\mathrm{count}[d][L] > 0$}
+      \STATE $s[d] \leftarrow s[d] + \mathrm{partial}[d][L]^2\cdot 840/\mathrm{count}[d][L]$
     \ENDIF
   \ENDFOR
 \ENDFOR
 \FOR{$d=0$ to $7$}
-  \IF{$s[d] > s[\textrm{best\_}d]$}
-    \STATE $\textrm{best\_}d \leftarrow d$ 
+  \IF{$s[d] > s[\mathrm{best\_}d]$}
+    \STATE $\mathrm{best\_}d \leftarrow d$ 
   \ENDIF
 \ENDFOR
-\STATE $\textrm{direction} \leftarrow \textrm{best\_}d$
-\STATE $\textrm{variance} \leftarrow s[\textrm{best\_}d] - s[(\textrm{best\_}d+4) \mod 8]$
+\STATE $\mathrm{direction} \leftarrow \mathrm{best\_}d$
+\STATE $\mathrm{variance} \leftarrow s[\mathrm{best\_}d] - s[(\mathrm{best\_}d+4) \mod 8]$
 \end{algorithmic}
 \end{varwidth}% 
 }
 \caption{Direction search. The line\_table[$d$][$i$][$j$] values are the line numbers shown
 in Fig.~\ref{fig:Lines-for-direction}. Note that in a practical implementation,
-the $840/\textrm{count}[d][L]$ term does not need to be computed, since it
+the $840/\mathrm{count}[d][L]$ term does not need to be computed, since it
 only depends on $d$ and $L$\label{cap:direction-search}. Some algebraic simplifications are omitted
 for clarity.}
 \end{algorithm}
@@ -339,20 +339,7 @@ cases (when the direction index value is odd) some taps in $R'$ and
 $R''$ have the same positions, but their weigths in
 $R'$ and $R''$ are separate.
 
-\begin{table*}
-\caption{CDEF Bjontegaard-delta~\cite{Testing-draft} rate for
-the objective-1-fast test set in AWCY.\label{tab:bd-rate}}
-\centering{%
-\begin{tabular}{cccccc}
-\hline 
-Bitrate (bpp) & PSNR & CIEDE 2000 & PSNR-HVS & SSIM & MS-SSIM\tabularnewline
-\hline 
-High-latency & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
-Low-latency & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
-Low-latency, low-complexity & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
-\hline 
-\end{tabular}}
-\end{table*}
+
 
 \subsection{Valid strengths and damping values}
 
@@ -380,12 +367,31 @@ variance $v$ (see algorithm~\ref{cap:direction-search}) for the 8x8 block as fol
 \begin{equation}
 S^{(p)}_{adj}=\left\{ \begin{array}{ll}
 \left\lfloor\frac{S^{(p)} \left(4 + \min\left(\left\lfloor \log_2\left\lfloor\frac{v}{2^{16}}\right\rfloor\right\rfloor, 12\right)\right) + 8}{16}\right\rfloor &, v \ge 2^{10}\\
-0 &, \textrm{otherwise}
+0 &, \mathrm{otherwise}
 \end{array}\right. \label{eq:strength-adjustment}
 \end{equation}
 
+\begin{table}
+\caption{CDEF Bj{\o}ntegaard-delta~\cite{Testing-draft} rate for
+the objective-1-fast test set in AWCY. The encoder is tested for a high-latency (HL)
+configuration, a real-time, low-latency (LL) configuration, as well as for
+low latency and low-complexity (LL+LC)\label{tab:bd-rate}}
+\centering{%
+\setlength\tabcolsep{3.8pt}
+\begin{tabular}{cccccc}
+\hline 
+\small{Encoding} & \small{PSNR} & \small{CIEDE} & \small{PSNR-HVS} & \small{SSIM} & \small{MS-SSIM}\tabularnewline
+\hline 
+HL & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
+LL & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
+LL + LC & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
+\hline 
+\end{tabular}}
+\end{table}
+
 \begin{figure}
 \centering{\includegraphics[width=\columnwidth]{cdef_vs_nothing}}
+\caption{Subjective A-B comparison (with ties) results for CDEF vs. no processing.\label{fig:subjective}}
 \end{figure}
 
 This adjustment is not applied for chroma, nor for the secondary strength $S''$.
@@ -429,7 +435,10 @@ secondary strength are not signaled.
 
 \section{Encoder Search}
 
-
+\begin{equation}
+D = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}||\mathbf{s}-\mathbf{d}||^2\ ,
+\end{equation}
+where $C_1=6.25$ and $C_2=312.5$ for 8-bit depth.
 
 \section{Results}
 
