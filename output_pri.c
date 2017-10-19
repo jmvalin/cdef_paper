@@ -92,8 +92,15 @@ int main(int argc, char **argv)
       else if (i==(2 + dy/2) && j == (2 + dx/2)) weight = 'b';
       else if (i==(2 - dy/2) && j == (2 - dx/2)) weight = 'b';
       else weight = 0;
-      if (weight)
+      if (weight) {
+#if 0
         printf("4 1 0 50 -1 1 18 0.0000 4 135 105 %d %d %c\\001\n", TBASEX+SIZE*j, TBASEY+SIZE*i, weight);
+#else
+        printf("4 1 0 50 -1 1 14 0.0000 4 135 105 %d %d %c\\001\n", TBASEX+SIZE*j, TBASEY+SIZE*i-130, weight);
+        printf("4 1 0 50 -1 0 14 0.0000 4 135 105 %d %d %s\\001\n", TBASEX+SIZE*j, TBASEY+SIZE*i-125, "__");
+        printf("4 1 0 50 -1 0 14 0.0000 4 135 105 %d %d 16\\001\n", TBASEX+SIZE*j, TBASEY+SIZE*i+80);
+#endif
+      }
     }
   }
   printf("4 1 0 50 -1 1 24 0.0000 4 135 105 %d %d d\\001\n", (int)(TBASEX+SIZE*2.4)-480, (int)(TBASEY+SIZE*5.2));

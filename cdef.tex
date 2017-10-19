@@ -252,10 +252,10 @@ f\left(d, S, D\right)=\left\{\begin{array}{ll}
 \end{array}\right. \label{eq:constraint-function}
 \end{equation}
 with $D \ge \lfloor\log_2{S}\rfloor$.
-The strength $S$ controls the maximum difference allowed minus a
-ramp-down controlled by $D$.  Fig.~\ref{fig:constraint-function-strength} illustrates
+The strength $S$ controls the maximum difference allowed and the damping $D$ controls the point where
+$f\left(d, S, D\right)=0$.  Fig.~\ref{fig:constraint-function-strength} illustrates
 the effect of the strength on $f(\cdot)$ and Fig.~\ref{fig:constraint-function-damping}
-illustrates the effect of damping. The function is symmetric for $d$ values around $0$.
+illustrates the effect of damping. The function is anti-symmetric around $d=0$.
 
 
 
@@ -270,20 +270,22 @@ illustrates the effect of damping. The function is symmetric for $d$ values arou
 \caption{Constraint function for different damping values $D$ (constant $S$).\label{fig:constraint-function-damping}}
 \end{figure}
 
-\subsection{Primary and Secondary Taps}
+\subsection{Directional filter}
 
 The main reason for identifying the direction of the Section~\ref{sec:direction-search} is to
 align the filter taps along that direction to reduce ringing while preserving the directional
-edges or patterns. However, directional filtering alone is sometimes not sufficient to
+edges or patterns. However, directional filtering alone sometimes cannot
 sufficiently reduce ringing so we also want to use filter taps on pixels that do not
 lie along the main direction.
 To reduce the risk of blurring, these extra taps are treated more conservatively. For this
-reasons, CDEF defines \textit{primary} taps and \textit{secondary} taps.
-
+reasons, CDEF defines \textit{primary taps} and \textit{secondary taps}. The primary taps follow
+the direction $d$, and the weights are shown in Fig.~\ref{fig:Primary-filter}. The secondary taps
+form a cross, oriented $45^\circ$ off the direction $d$ and their weights are shown in
+Fig.~\ref{fig:Secondary-filter}. The complete 2-D CDEF filter is expressed as
 \begin{align}
 y\left(i, j\right)=&x(i, j) + \mathrm{round}\bigg( \nonumber\\
- & \sum_{m,n \in R^{(p)}}{w}^{(p)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(p)}, D) \nonumber\\
-+& \sum_{m,n \in R^{(s)}}{w}^{(s)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(s)}, D) \bigg)\ ,
+ & \sum_{m,n \in R^{(p)}}{w}^{(p)}_{d,m,n}f(x\left(m, n) - x(i,j\right), S^{(p)}, D) \nonumber\\
++& \sum_{m,n \in R^{(s)}}{w}^{(s)}_{d,m,n}f(x\left(m, n) - x(i,j\right), S^{(s)}, D) \bigg)\ ,
 \label{eq:linear-filter2}
 \end{align}
 where $\mathrm{round}(\cdot)$ rounds to the nearest integer, with ties away from zero.
