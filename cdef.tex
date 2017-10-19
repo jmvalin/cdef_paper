@@ -43,7 +43,7 @@
 
 \begin{document}
 
-\title{The AV1 Constrained Directional Enhancement Filter}
+\title{The AV1 Constrained Directional Enhancement Filter (CDEF)}
 
 \maketitle
 \begin{abstract}
@@ -199,7 +199,7 @@ shown are never computed in practice (only $s_{d}$ is). \label{fig:Example-of-di
   \FOR{$i=0$ to $7$}
     \FOR{$j=0$ to $7$}
       \STATE $L \leftarrow \mathrm{line\_table}[d][i][j]$
-      \STATE $\mathrm{partial}[d][L] \leftarrow \mathrm{partial}[d][L] + \lfloor{\mathrm{pixel}[i][j] \cdot 2^{8 - \mathrm{bitdepth}}\rfloor - 128}$
+      \STATE $\mathrm{partial}[d][L] \leftarrow \mathrm{partial}[d][L] + \left(\mathrm{pixel}[i][j] - 128\right)$
       \STATE $\mathrm{count}[d][L] \leftarrow \mathrm{count}[d][L] + 1$
     \ENDFOR
   \ENDFOR
@@ -350,10 +350,10 @@ blurring important details in the image.  For 8 bit content $S'$ can
 have integer values between $0$ and $15$, and $S''$ can be $0$, $1$,
 $2$ or $4$.  $D$ can be set to $3$, $4$, $5$ or $6$ for luma, and the
 damping value for chroma is always one less.  The damping value shall
-never be lower than the $log_2$ of the strength to ensure that
+never be lower than the $\log_2$ of the strength to ensure that
 $2^{D-\lfloor{\log_{2}S}\rfloor}$ in the constraint function never
 becomes less than $1$.  For instance, if the chroma $S'$ is $15$ and the luma damping is $3$,
-the chroma damping shall also be $3$ because $log_2(S')$ is $3$.
+the chroma damping shall also be $3$ because $\log_2(S')$ is $3$.
 
 For content above 8 bit, $S'$ and $S''$ must be scaled according to
 the extra bit depth, and $D$ offset corresponingly, so for 12 bit
