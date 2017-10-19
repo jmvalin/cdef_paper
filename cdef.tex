@@ -133,14 +133,11 @@ $N_{1,0}=2$ and $N_{1,4}=8$). The SSD is then defined as:
 \sigma_{d}^{2}=\sum_{k\in\mathrm{block},d}\left[\sum_{p\in P_{d,k}}\left(x_{p}-\mu_{d,k}\right)^{2}\right]\ .\label{eq:direction-variance0}
 \end{equation}
 
-Expanding (\ref{eq:direction-variance0}) and then substituting (\ref{eq:pixel-average})
-into it, we get
-\begin{align}
-\sigma_{d}^{2}= & \sum_{k\in\mathrm{block},d}\left[\sum_{p\in P_{d,k}}x_{p}^{2}-2\sum_{p\in P_{d,k}}x_{p}\mu_{d,k}+\sum_{p\in P_{d,k}}\mu_{d,k}^{2}\right]\nonumber \\
-= & \sum_{k\in\mathrm{block},d}\left[\sum_{p\in P_{d,k}}x_{p}^{2}-2\mu_{d,k}\sum_{p\in P_{d,k}}x_{p}+N_{d,k}\mu_{d,k}^{2}\right]\nonumber \\
-= & \sum_{k\in\mathrm{block},d}\left[\sum_{p\in P_{d,k}}x_{p}^{2}-\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\right]\nonumber \\
-= & \sum_{p\in\mathrm{block}}x_{p}^{2}-\sum_{k\in\mathrm{block},d}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance1}
-\end{align}
+Substituting (\ref{eq:pixel-average}) into (\ref{eq:direction-variance0}) and
+simplifying results in
+\begin{equation}
+\sigma_{d}^{2}= \sum_{p\in\mathrm{block}}x_{p}^{2}-\sum_{k\in\mathrm{block},d}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance1}
+\end{equation}
  Note that the simplifications leading to (\ref{eq:direction-variance1})
 are the same as to those allowing a variance to be computed as $\sigma_{x}^{2}=\sum x^{2}-\left(\sum x\right)^{2}/N$.
 Considering that the first term of (\ref{eq:direction-variance1})
@@ -284,18 +281,22 @@ To reduce the risk of blurring, these extra taps are treated more conservatively
 reasons, CDEF defines \textit{primary} taps and \textit{secondary} taps.
 
 \begin{align}
-y\left(i, j\right)=x(i, j) &+ \sum_{m,n \in R^{(p)}}{w}^{(p)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(p)}, D) \nonumber\\
-                           &+ \sum_{m,n \in R^{(s)}}{w}^{(s)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(s)}, D)
+y\left(i, j\right)=&x(i, j) + \mathrm{round}\bigg( \nonumber\\
+ & \sum_{m,n \in R^{(p)}}{w}^{(p)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(p)}, D) \nonumber\\
++& \sum_{m,n \in R^{(s)}}{w}^{(s)}_{m,n}f(x\left(m, n) - x(i,j\right), S^{(s)}, D) \bigg)\ ,
 \label{eq:linear-filter2}
 \end{align}
+where $\mathrm{round}(\cdot)$ rounds to the nearest integer, with ties away from zero.
 
-The function $g$ ensures that the modification $\Delta$ of the pixel
-$x$ to be filtered does not exceed the greatest difference between $x$
-and any $x(m,n)$:
-\begin{equation}
-g\left(\Delta\right)=clip\left(\Delta, \min_{m, n \in R}(x(m,n) - x(i,j), \max_{m, n \in R}(x(m,n) - x(i,j)\right)
+Since the sum of all the primary and secondary weights exceed unity, it is possible (though rare) for
+the output $y(i,j)$ to change by more than the maximum difference between the input and the neighbouring
+values. This is avoided by explicitly clamping the filter output based on $R^{(p)}$ and $R^{(s)}$:
+\begin{align}
+y_{clip}(i,j) &= \min\left(y_{max}, \max\left(y_{min}, y(i,j) \right) \right)\\
+y_{min} &= \min_{m, n \in R^{(p)} \cup R^{(s)}}(x(i+m,j+n)) \\
+y_{max} &= \max_{m, n \in R^{(p)} \cup R^{(s)}}(x(i+m,j+n))
 \label{eq:cap-function}
-\end{equation}
+\end{align}
 Where $R$ is the set of pixels in the 5x5 neighbourhood of $x(i, j)$ with non-zero weights $w_{d,m,n}$.
 This ensures that the filtered pixel never can attain a value higher
 than or lower than any of the pixels associated with the filter taps.
@@ -435,8 +436,10 @@ secondary strength are not signaled.
 
 \section{Encoder Search}
 
+
+Based on structural similarity (SSIM) metric~\cite{wang2004image}.
 \begin{equation}
-D = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}||\mathbf{s}-\mathbf{d}||^2\ ,
+D_{8x8} = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2\ ,
 \end{equation}
 where $C_1=6.25$ and $C_2=312.5$ for 8-bit depth.
 
