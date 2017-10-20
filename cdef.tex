@@ -320,43 +320,38 @@ The filtered pixel in shown in gray.
 \caption{Secondary filter taps following direction $d=0:7$. The filtered pixel is shown in gray.\label{fig:Secondary-filter}}
 \end{figure}
 
-For each 8x8 block to be filtered, the directional filter is applied
-in a single pass using the strengths ${S'}_{adj}$ and ${S''}$ for luma
-or ${S'}$ and ${S''}$ for chroma, and damping value $D$. When
-filtering pixel $(i,j)$, the directional filter may use pixels that
-are outside of the 8x8 block, or even outside of the superblock. If
-the input pixel lies outside of the frame, then the pixel is ignored,
-i.e. $f(d,S,D)=0$. The filter and weights for each direction $d$ are
-described in Section~\ref{sec:nonlinear-lowpass}.  Note that in some
-cases (when the direction index value is odd) some taps in $R'$ and
-$R''$ have the same positions, but their weigths in
-$R'$ and $R''$ are separate.
-
-
+The direction, strength and damping parameters are constant over each $8\times8$
+block being filtered. When processing the pixel at position $(i,j)$, the
+filter is allowed to use pixels $x(i+m,j+m)$ lying outside of the
+$8\times8$ block, or even outside of the superblock. If
+the input pixel lies outside of the frame (visible area), then the pixel
+is ignored, i.e. $f(d,S,D)=0$. To maximize parallelism, CDEF always operates
+on the input (post-deblocking) pixels $x(i,j)$ so filtered pixels are never reused
+for filtering other pixels.
 
 \subsection{Valid strengths and damping values}
 
-The strengths $S'$ and $S''$ and damping value $D$ must be set high
+The strengths $S^{(p)}$ and $S^{(s)}$ and damping value $D$ must be set high
 enough to smooth out coding artifacts, but low enough to avoid
-blurring important details in the image.  For 8 bit content $S'$ can
-have integer values between $0$ and $15$, and $S''$ can be $0$, $1$,
+blurring important details in the image.  For 8-bit content $S^{(p)}$ can
+have integer values between $0$ and $15$, and $S^{(s)}$ can be $0$, $1$,
 $2$ or $4$.  $D$ can be set to $3$, $4$, $5$ or $6$ for luma, and the
 damping value for chroma is always one less.  The damping value shall
-never be lower than the $\log_2$ of the strength to ensure that
-$2^{D-\lfloor{\log_{2}S}\rfloor}$ in the constraint function never
-becomes less than $1$.  For instance, if the chroma $S'$ is $15$ and the luma damping is $3$,
-the chroma damping shall also be $3$ because $\log_2(S')$ is $3$.
+never be lower than the $\log_2 S$ to ensure that
+the shift value used to compute $2^{D-\lfloor{\log_{2}S}\rfloor}$ in (\ref{eq:constraint-function}) never
+becomes negative.  For instance, if for chroma $S^{(p)}=15$ and the luma damping is $3$,
+the chroma damping shall also be $3$ (and not 2) because $\left\lfloor\log_2 S^{(s)}\right\rfloor=3$.
 
-For content above 8 bit, $S'$ and $S''$ must be scaled according to
-the extra bit depth, and $D$ offset corresponingly, so for 12 bit
-content $S'$ can have the values $0$, $16$, $32$, $...$, $240$, and
-$D$ can have the values $7$, $8$, $9$ and $10$.  Picking an optimial
+For higher bit depth (more than 8 bits), $S^{(p)}$ and $S^{(s)}$ are scaled according to
+the extra bit depth, and $D$ is offset accordingly. For example, 12-bit
+content can have $S^{(p)}$ values of $0$, $16$, $32$, $...$, $240$, and
+the valid $D$ values are $7$, $8$, $9$ and $10$.  Picking an optimial
 damping value is less critical for compression gains than picking the
-optimal strengths.  $S'$ and $S''$ are are set independently for
+optimal strengths.  $S^{(p)}$ and $S^{(s)}$ are chosen independently for
 luma and chroma.
 
-The signaled primary strength $S'$ is adjusted for luma using a
-variance $v$ (see algorithm~\ref{cap:direction-search}) for the 8x8 block as follows:
+The signaled primary strength $S^{(p)}$ is adjusted for luma using a
+variance $v$ (see algorithm~\ref{cap:direction-search}) for the $8\times8$ block as follows:
 \begin{equation}
 S^{(p)}_{adj}=\left\{ \begin{array}{ll}
 \left\lfloor\frac{S^{(p)} \left(4 + \min\left(\left\lfloor \log_2\left\lfloor\frac{v}{2^{16}}\right\rfloor\right\rfloor, 12\right)\right) + 8}{16}\right\rfloor &, v \ge 2^{10}\\
