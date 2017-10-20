@@ -285,50 +285,39 @@ form a cross, oriented $45^\circ$ off the direction $d$ and their weights are sh
 Fig.~\ref{fig:Secondary-filter}. The complete 2-D CDEF filter is expressed as
 \begin{align}
 y\left(i, j\right)=&x(i, j) + \mathrm{round}\bigg( \nonumber\\
- & \sum_{m,n \in R^{(p)}}{w}^{(p)}_{d,m,n}f(x\left(m, n) - x(i,j\right), S^{(p)}, D) \nonumber\\
-+& \sum_{m,n \in R^{(s)}}{w}^{(s)}_{d,m,n}f(x\left(m, n) - x(i,j\right), S^{(s)}, D) \bigg)\ ,
+ & \sum_{m,n}{w}^{(p)}_{d,m,n}f\left(x\left(m, n) - x(i,j\right), S^{(p)}, D\right) \nonumber\\
++& \sum_{m,n}{w}^{(s)}_{d,m,n}f\left(x\left(m, n) - x(i,j\right), S^{(s)}, D\right) \bigg)\ ,
 \label{eq:linear-filter2}
 \end{align}
 where $\mathrm{round}(\cdot)$ rounds to the nearest integer, with ties away from zero.
 
 Since the sum of all the primary and secondary weights exceed unity, it is possible (though rare) for
 the output $y(i,j)$ to change by more than the maximum difference between the input and the neighbouring
-values. This is avoided by explicitly clamping the filter output based on $R^{(p)}$ and $R^{(s)}$:
+values. This is avoided by explicitly clamping the filter output based on the neighbouring pixels with
+non-zero weights:
 \begin{align}
 y_{clip}(i,j) &= \min\left(y_{max}, \max\left(y_{min}, y(i,j) \right) \right)\\
-y_{min} &= \min_{m, n \in R^{(p)} \cup R^{(s)}}(x(i+m,j+n)) \\
-y_{max} &= \max_{m, n \in R^{(p)} \cup R^{(s)}}(x(i+m,j+n))
+y_{min} &= \min_{m, n \in R}(x(i+m,j+n)) \\
+y_{max} &= \max_{m, n \in R}(x(i+m,j+n)) \\
+R &= (n,m) | {w}^{(p)}_{d,m,n}+{w}^{(s)}_{d,m,n} \ne 0
 \label{eq:cap-function}
 \end{align}
-Where $R$ is the set of pixels in the 5x5 neighbourhood of $x(i, j)$ with non-zero weights $w_{d,m,n}$.
-This ensures that the filtered pixel never can attain a value higher
-than or lower than any of the pixels associated with the filter taps.
-
-To allow control over the strength of the filtering along the
-identified direction and the strength of the filtering across the
-direction, the $S$ is allowed to differ for different
-filter taps.  We therefore define \textit{primary taps} in $R'$ and
-\textit{secondary taps} in $R''$ which have their associated strengths
-$S'$ and $S''$ respectively.  To reflect this the filter can be expressed more specifically
-as follows:
-
-Both $R'$ and $R''$ depend on the direction.  $R'$ has the following
-taps (the values for $w'$ are shown for their pixels relative to the filter $x$ to be filtered):
-
 
 \begin{figure}
 \centering{\includegraphics[width=0.24\columnwidth]{pri0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri3}}
 
 \vspace{.5em}
 
-\centering{\includegraphics[width=0.24\columnwidth]{pri4}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri5}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri6}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri7}}\caption{Primary filter taps following direction $d=0:7$.\label{fig:Primary-filter}}
+\centering{\includegraphics[width=0.24\columnwidth]{pri4}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri5}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri6}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri7}}
+\caption{Primary filter taps following direction $d=0:7$. For even strengths $a=2$ and $b=4$, whereas for odd strengths $a=3$ and $b=3$.
+The filtered pixel in shown in gray.
+\label{fig:Primary-filter}}
 \end{figure}
 
-where $a=2$ and $b=4$ for even strengths and $a=3$ and $b=3$ for odd strengths.  $R''$ has the following taps ($w''$):
 
 \begin{figure}
 \centering{\includegraphics[width=0.24\columnwidth]{sec0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec3}}
-\caption{Secondary filter taps following direction $d=0:7$.\label{fig:Secondary-filter}}
+\caption{Secondary filter taps following direction $d=0:7$. The filtered pixel is shown in gray.\label{fig:Secondary-filter}}
 \end{figure}
 
 For each 8x8 block to be filtered, the directional filter is applied
