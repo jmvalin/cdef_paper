@@ -240,11 +240,12 @@ In one dimension, the non-linear filter can be expressed as
 \begin{equation}
 y\left(i\right)=x\left(i\right) +\!\!\sum_{m}w_k f\left(x\left(i+m) - x(i\right), S, D\right)\ ,\label{eq:linear-filter}
 \end{equation}
-where the constraint function $f(d, S, D)$ operates on the difference between the filtered pixel and each of the
-neighbour pixels. For small differences, $f\left(d, S, D\right)=d$, making the filter in
+where $w_k$ are the filter weights and $f(d, S, D)$ is a \textit{constraint function} operating
+on the difference between the filtered pixel and each of the
+neighbouring pixels. For small differences, $f\left(d, S, D\right)=d$, making the filter in
 (\ref{eq:linear-filter}) behave like a linear filter. However, when the difference is large,
 $f\left(d, S, D\right)=0$, which effectively ignores the filter tap.
-The filter is parametrized by a \textit{strength} $S$ and a \textit{damping} value $D$
+The filter is parametrized by a \textit{strength} $S$ and a \textit{damping} value $D$:
 \begin{equation}
 f\left(d, S, D\right)=\left\{\begin{array}{ll}
 \!\!\min\left(d, \max\left(0, S-\left\lfloor{\frac{d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\right\rfloor\right)\right) , d\ge0\\
