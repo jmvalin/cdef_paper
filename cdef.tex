@@ -93,8 +93,7 @@ allows a high degree of control over the blurring.
 \section{Direction Search}
 \label{sec:direction-search}
 
-The proposed enhancement filter is based on the direction of edges,
-so we start by describing the direction search. The search on the
+Se start by describing the direction search. The search operates on the
 reconstructed pixels, just after the deblocking is applied. Since
 those pixels are available to the decoder, no signalling is required
 for the directions.
@@ -130,13 +129,13 @@ pixels in line $k$ following direction $d$ and $N_{d,k}$ is the
 cardinality of $P_{d,k}$ (for example, in Fig.~\ref{fig:Lines-for-direction},
 $N_{1,0}=2$ and $N_{1,4}=8$). The SSD is then defined as:
 \begin{equation}
-\sigma_{d}^{2}=\sum_{k\in\mathrm{block},d}\left[\sum_{p\in P_{d,k}}\left(x_{p}-\mu_{d,k}\right)^{2}\right]\ .\label{eq:direction-variance0}
+\sigma_{d}^{2}=\sum_{k}\left[\sum_{p\in P_{d,k}}\left(x_{p}-\mu_{d,k}\right)^{2}\right]\ .\label{eq:direction-variance0}
 \end{equation}
 
 Substituting (\ref{eq:pixel-average}) into (\ref{eq:direction-variance0}) and
 simplifying results in
 \begin{equation}
-\sigma_{d}^{2}= \sum_{p\in\mathrm{block}}x_{p}^{2}-\sum_{k\in\mathrm{block},d}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance1}
+\sigma_{d}^{2}= \sum_{p}x_{p}^{2}-\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance1}
 \end{equation}
  Note that the simplifications leading to (\ref{eq:direction-variance1})
 are the same as to those allowing a variance to be computed as $\sigma_{x}^{2}=\sum x^{2}-\left(\sum x\right)^{2}/N$.
@@ -148,7 +147,7 @@ d_{opt}=\max_{d}s_{d}\,,\label{eq:direction-variance2}
 \end{equation}
 where 
 \begin{equation}
-s_{d}=\sum_{k\in\mathrm{block},d}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance3}
+s_{d}=\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance3}
 \end{equation}
 
 We can avoid the division in (\ref{eq:direction-variance3}) by multiplying
@@ -289,7 +288,8 @@ y\left(i, j\right)=&x(i, j) + \mathrm{round}\bigg( \nonumber\\
 +& \sum_{m,n}{w}^{(s)}_{d,m,n}f\left(x\left(m, n) - x(i,j\right), S^{(s)}, D\right) \bigg)\ ,
 \label{eq:linear-filter2}
 \end{align}
-where $\mathrm{round}(\cdot)$ rounds to the nearest integer, with ties away from zero.
+where $S^{(p)}$ and $S^{(s)}$ and the strengths of the primary and secondary taps, respectively,
+and $\mathrm{round}(\cdot)$ rounds to the nearest integer, with ties away from zero.
 
 Since the sum of all the primary and secondary weights exceed unity, it is possible (though rare) for
 the output $y(i,j)$ to change by more than the maximum difference between the input and the neighbouring
@@ -358,6 +358,7 @@ S^{(p)}_{adj}=\left\{ \begin{array}{ll}
 0 &, \mathrm{otherwise}
 \end{array}\right. \label{eq:strength-adjustment}
 \end{equation}
+This adjustment is not applied for chroma, nor for the secondary strength $S^{(s)}$.
 
 \begin{table}
 \caption{CDEF Bj{\o}ntegaard-delta~\cite{Testing-draft} rate for
@@ -379,30 +380,28 @@ LL + LC & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
 
 \begin{figure}
 \centering{\includegraphics[width=\columnwidth]{cdef_vs_nothing}}
-\caption{Subjective A-B comparison (with ties) results for CDEF vs. no processing.\label{fig:subjective}}
+\caption{Subjective A-B comparison (with ties) results for CDEF vs. no processing for the high-latency configuration.\label{fig:subjective}}
 \end{figure}
 
-This adjustment is not applied for chroma, nor for the secondary strength $S''$.
 
-
-\section{Signaling and Superblocks}
+\section{Signaling and Filter Blocks}
 
 Some CDEF parameters are signaled at the frame level, and some
-parameters may be signaled at the superblock level.  The following is
+parameters may be signaled at the filter block ($64\times64$) level.  The following is
 signaled at the frame level: the damping $D$ (2 bit), the number of
-bits used for superblock signaling (0-3, 2 bits), and a list of 1, 2,
+bits used for filter block signaling (0-3, 2 bits), and a list of 1, 2,
 4 or 8 presets.  One preset contains the luma primary strength (4
 bits), the chroma primary strength (4 bits), the luma secondary
 strength (2 bits), the chroma secondary strength, a luma skip
 condition bit, and a chroma skip condition bit (a total of 14 bits per
 preset).
 
-The filtering is applied one superblock at a time.  For each
-superblock, the 0 - 3 bits are read to indicate the preset that will
-be used for this superblock.  On inter-predicted frames, the filter
-parameters are only coded for superblocks that are not completely
-skipped.  Superblocks where no level is coded have CDEF disabled.
-Similarly, any skipped coding block within a superblock has filtering
+The filtering is applied one filter block at a time.  For each
+filter block, the 0 - 3 bits are read to indicate the preset that will
+be used for this filter block.  On inter-predicted frames, the filter
+parameters are only coded for filter blocks that are not completely
+skipped.  Skipped filter blocks have CDEF disabled.
+Similarly, any skipped coding block within a filter block has filtering
 disabled if the skip condition bit is not set.
 
 When the pixels used for a filter lie outside of the viewable image,
@@ -424,21 +423,22 @@ secondary strength are not signaled.
 \section{Encoder Search}
 
 On the encoder side, the search needs to determine both the frame level parameters
-(preset parameters, number of presets) and the superblock-level preset ID. Assuming
-the presets are already chosen, the ID for each non-skipped superblock is
-chosen by minimizing a distortion metric over the superblock. The simplest error metric
+(preset parameters, number of presets) and the filter block-level preset ID. Assuming
+the presets are already chosen, the ID for each non-skipped filter block is
+chosen by minimizing a distortion metric over the filter block. The simplest error metric
 is the sum of squared error (SSE), defined as $D=\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2$,
-where $\mathbf{s}$ is a vector containing the source (uncoded) pixels for the superblock and
+where $\mathbf{s}$ is a vector containing the source (uncoded) pixels for the filter block and
 $\mathbf{d}$ contains the decoded pixels, filtered using a particular preset. While SSE leads
 to good results overall, it sometimes causes excessive smoothing in non-directional textured
 areas (e.g. grass). Instead, we use a modified version of SSE that takes into account
 contrast in a similar way to the structural similarity (SSIM) metric~\cite{wang2004image}. The
-distortion metric is the sum over the superblock of the following $8\times8$ distortion function:
+distortion metric is the sum over the filter block of the following $8\times8$ distortion function:
 \begin{equation}
 D_{8\times8} = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}\cdot\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2\ ,
 \end{equation}
 where $\sigma_s^2$ and $\sigma_d^2$ are the variances of $\mathbf{s}$ and $\mathbf{d}$ over the
-block and the constants are set to $C_1=6.25$ and $C_2=312.5$ for 8-bit depth.
+block and the constants are set to $C_1=6.25$ and $C_2=312.5$ for 8-bit depth. Since the distortion
+metric is only used in the encoder, it is not normative.
 
 \section{Results}
 
@@ -468,6 +468,10 @@ artifacts from coded images and videos. By taking into account the
 direction of the patterns, the risk of blurring is reduced. Objective
 results show a bit-rate reductions up to 20\% depending on the encoder
 configuration and video content.
+
+\section{Acknowledgements}
+
+We would like to thank Thomas Daede for organizing the subjective test.
 
 \bibliographystyle{IEEEtran}
 \bibliography{daala}
