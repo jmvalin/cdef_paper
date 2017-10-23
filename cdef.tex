@@ -343,7 +343,7 @@ damping value for chroma is always one less.  The damping value shall
 never be lower than the $\log_2 S$ to ensure that
 the shift value used to compute $2^{D-\lfloor{\log_{2}S}\rfloor}$ in (\ref{eq:constraint-function}) never
 becomes negative.  For instance, if for chroma $S^{(p)}=15$ and the luma damping is $3$,
-the chroma damping shall also be $3$ (and not 2) because $\left\lfloor\log_2 S^{(s)}\right\rfloor=3$.
+the chroma damping shall also be $3$ (and not 2) because $\left\lfloor\log_2 S^{(p)}\right\rfloor=3$.
 
 For higher bit depth (more than 8 bits), $S^{(p)}$ and $S^{(s)}$ are scaled according to
 the extra bit depth, and $D$ is offset accordingly. For example, 12-bit
