@@ -458,6 +458,13 @@ the number of filter blocks. While we are not aware of polynomial-time algorithm
 global minimum, we have found that a greedy search can produce near-optimal results. With
 the greedy search, we start by finding the optimal presets for $N=1$ and then increment $N$
 by finding the optimal preset to add while keeping the already-selected presets $1..N-1$ constant.
+If the encoder can afford the complexity, it is possible to improve on the purely
+greedy search by iteratively re-optimizing one preset at a time.
+
+The high complexity version of the search described above typically results in less than
+1\% of the encoding time. Still, for low complexity operation, it is possible to reduce
+the search complexity by only considering a subset of the 128 possible presets. 
+This results in only a small loss ($<0.1\%$ BD-rate) in quality.
 
 The damping value may be determined from
 the quantizer alone (larger damping for larger quantizer).
