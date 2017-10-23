@@ -397,26 +397,25 @@ bits used for filter block signaling (0-3, 2 bits), and a list of 1, 2,
 bits), the chroma primary strength (4 bits), the luma secondary
 strength (2 bits), the chroma secondary strength, a luma skip
 condition bit, and a chroma skip condition bit (a total of 14 bits per
-preset).  The filtering is applied one filter block at a time.  For each filter
-block, the 0 - 3 bits are read to indicate the preset that will be
-used for this filter block. The filter parameters are not coded for
-filter blocks only containing skipped coding blocks, i.e. blocks
-(whether intra or inter) without coded residuals.  Any individual
-skipped coding blocks within a filter block have filtering disabled if
-their skip condition bit is not set.
+preset).  The filtering is applied one filter block at a time.  For each
+filter block, the 0 - 3 bits are read to indicate the preset that will
+be used for this filter block.  On inter-predicted frames, the filter
+parameters are only coded for filter blocks that are not completely
+skipped.  Skipped filter blocks have CDEF disabled.
+Similarly, any skipped coding block within a filter block has filtering
+disabled unless a skip condition bit is set.
 
 When the pixels used for a filter lie outside of the viewable image,
 we set $f\left(d,S,D\right)=0$ in equation~\ref{eq:constraint-function}.
 
 Since the skip condition flag would be redundant in the case when both
 the primary and secondary filter strengths are $0$, this combination
-has a special meaning.  If the skip condition flag is set and both the
-primary and secondary strengths have been signaled as $0$, then the
+has a special meaning.  In that case, the
 block shall be filtered with a primary filter strength equal to $19$
 and a secondary filter strength equal to $7$.  The skip condition
 flag is still to be regarded as $1$.
 
-If the chroma subsampling differs horizontally and vertically,
+When the chroma subsampling differs horizontally and vertically,
 e.g. 4:2:2 video, the filter is disabled for chroma, and the chroma
 primary strength, the chroma skip condition flag and the chroma
 secondary strength are not signaled.
@@ -440,6 +439,15 @@ D_{8\times8} = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 
 where $\sigma_s^2$ and $\sigma_d^2$ are the variances of $\mathbf{s}$ and $\mathbf{d}$ over the
 block and the constants are set to $C_1=6.25$ and $C_2=312.5$ for 8-bit depth. Since the distortion
 metric is only used in the encoder, it is not normative.
+
+There are many possible strategies for choosing the presets for the frame, depending
+on the acceptable complexity requirements and whether the encoder is allowed to make
+two passes through the frame. In the two-pass case, the first step is to measure the
+distortion for each filter block, for each combination of $S^{(p)}$ and $S^{(s)}$
+(a total of $16\times4=64$) and for each plane. 
+
+The damping value is determined from
+the quantizer alone (larger damping for larger quantizer).
 
 \section{Results}
 
@@ -469,7 +477,7 @@ direction of the patterns, the risk of blurring is reduced. Objective
 results show a bit-rate reductions up to 20\% depending on the encoder
 configuration and video content.
 
-\section{Acknowledgements}
+\section{Acknowledgments}
 
 We would like to thank Thomas Daede for organizing the subjective test.
 
