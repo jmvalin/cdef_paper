@@ -410,9 +410,6 @@ skipped.  Skipped filter blocks have CDEF disabled.
 Similarly, any skipped coding block within a filter block has filtering
 disabled unless a skip condition bit is set.
 
-When the pixels used for a filter lie outside of the viewable image,
-we set $f\left(d,S,D\right)=0$ in equation~\ref{eq:constraint-function}.
-
 Since the skip condition flag would be redundant in the case when both
 the primary and secondary filter strengths are $0$, this combination
 has a special meaning.  In that case, the
@@ -448,8 +445,8 @@ metric is only used in the encoder, it is not normative.
 There are many possible strategies for choosing the presets for the frame, depending
 on the acceptable complexity requirements and whether the encoder is allowed to make
 two passes through the frame. In the two-pass case, the first step is to measure the
-distortion for each filter block, for each combination of $S^{(p)}$ and $S^{(s)}$
-(a total of $16\times4=64$) and for each plane. 
+distortion for each filter block, for each combination of $S^{(p)}$, $S^{(s)}$ and skip condition bit
+($16\times4\times2=128$ parameter combinations) and for each plane. 
 
 The damping value may be determined from
 the quantizer alone (larger damping for larger quantizer).
