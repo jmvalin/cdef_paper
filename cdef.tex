@@ -445,8 +445,19 @@ metric is only used in the encoder, it is not normative.
 There are many possible strategies for choosing the presets for the frame, depending
 on the acceptable complexity requirements and whether the encoder is allowed to make
 two passes through the frame. In the two-pass case, the first step is to measure the
-distortion for each filter block, for each combination of $S^{(p)}$, $S^{(s)}$ and skip condition bit
+distortion $D_{b,p}$ for each filter block b, for each combination $p$ of 
+$S^{(p)}$, $S^{(s)}$ and skip condition bit
 ($16\times4\times2=128$ parameter combinations) and for each plane. 
+Once the distortion values are computed, the goal is to find the two sets of presets
+$P_{\mathrm{luma}}$ and $P_{\mathrm{chroma}}$ that minimize the rate-distortion cost
+\begin{equation}
+J=\lambda B\log_2 N +  \sum_{b} \left(\min_{p \in P_{\mathrm{luma}}} D^{\mathrm{luma}}_{b,p} + \min_{p \in P_{\mathrm{chroma}}} D^{\mathrm{chroma}}_{b,p}\right)\ ,
+\end{equation}
+where $N$ is the cardinality of $P_{\mathrm{luma}}$ and $P_{\mathrm{chroma}}$ and $B$ is
+the number of filter blocks. While we are not aware of polynomial-time algorithms to find the
+global minimum, we have found that a greedy search can produce near-optimal results. With
+the greedy search, we start by finding the optimal presets for $N=1$ and then increment $N$
+by finding the optimal preset to add while keeping the already-selected presets $1..N-1$ constant.
 
 The damping value may be determined from
 the quantizer alone (larger damping for larger quantizer).
