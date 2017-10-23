@@ -365,21 +365,26 @@ This adjustment is not applied for chroma, nor for the secondary strength $S^{(s
 
 \begin{table}
 \caption{CDEF Bj{\o}ntegaard-delta~\cite{Testing-draft} rate for
-the objective-1-fast test set in AWCY. The encoder is tested for a high-latency (HL)
-configuration, a real-time, low-latency (LL) configuration, as well as for
-low latency and low-complexity (LL+LC)\label{tab:bd-rate}}
+the objective-1-fast test set in AWCY. The AV1 and Thor encoders were
+tested for a high-latency (HL) configuration, a real-time, low-latency (LL)
+configuration, as well as for low latency and low-complexity (LL+LC)\label{tab:bd-rate}.}
 \centering{%
-\setlength\tabcolsep{3.8pt}
+\setlength\tabcolsep{2.1pt}
 \begin{tabular}{cccccc}
 \hline 
 \small{Encoding} & \small{PSNR} & \small{CIEDE} & \small{PSNR-HVS} & \small{SSIM} & \small{MS-SSIM}\tabularnewline
 \hline 
-HL & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
-LL & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
-LL + LC & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
+AV1 HL & -1.08\% & -2.11\% & -0.15\% & -1.11\% & -0.44\%\tabularnewline
+AV1 LL & -1.93\% & -2.88\% & -0.86\% & -1.96\% & -1.18\%\tabularnewline
+AV1 LL + LC & -3.68\% & -4.54\% & -2.50\% & -4.15\% & -3.05\%\tabularnewline
+\hline
+Thor HL & -2.26\% & -3.13\% & -0.49\% & -2.75\% & -1.39\%\tabularnewline
+Thor LL & -3.19\% & -5.18\% & -1.34\% & -3.31\% & -2.23\%\tabularnewline
+Thor LL + LC & -6.17\% & -10.33\% & -4.13\% & -7.60\% & -6.11\%\tabularnewline
 \hline 
 \end{tabular}}
 \end{table}
+
 
 \begin{figure}
 \centering{\includegraphics[width=\columnwidth]{cdef_vs_nothing}}
@@ -452,18 +457,18 @@ the quantizer alone (larger damping for larger quantizer).
 \section{Results}
 
 We tested the deringing filter using the Are We Compressed
-Yet~\cite{AWCY} online testing tool. The results are shown in
+Yet~\cite{AWCY} online testing tool using the AV1 codec and Thor codec, both
+still in development at the time of writing. The results are shown in
 table~\ref{tab:bd-rate} for the objective-1-fast test set.  These
-results reflect the gains in the codebase for git SHA \texttt{e200b28}
-(8th August 2017).
-
+results reflect the gains in the codebases for git SHA's \texttt{e200b28}
+(8th August 2017) and \texttt{b5e5cc5} (21st October 2017) for AV1 and Thor
+respectively.
 
 CDEF competes for the same gains as some other coding tools, in
-particular the dual\_filter tool and to a lesser degree motion\_var
-and ext\_tx.  Disabling these tools roughly doubles the CDEF gains.
-In medium to low complexity configurations excluding one or more of
-these tools while keeping CDEF enabled may give a better
-compexity/compression trade-off.
+AV1 in particular the dual\_filter tool and to a lesser degree motion\_var
+and ext\_tx.  Disabling these tools in AV1 roughly doubles the CDEF gains.
+The Thor codec lacks these tools.  In medium to low complexity encoder configurations
+some tools while keeping CDEF enabled may give a good compexity/compression trade-off.
 
 Subjective tests have shown a significant improvement in quality for
 most types of video content, as shown in figure~\ref{fig:subjective}.
