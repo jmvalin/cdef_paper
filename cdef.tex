@@ -1,8 +1,9 @@
 %% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 %\documentclass[english,conference,onecolumn]{IEEEtran}
-\documentclass[english]{article}
-\usepackage{spconf}
+\documentclass[smallabstract,smallcaptions]{dccpaper}
+%\documentclass[english]{article}
+%\usepackage{spconf}
 \usepackage{array}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -19,11 +20,20 @@
 \floatname{algorithm}{Algorithm}
 
 
-%\ninept\name{Jean-Marc Valin, Steinar Midtskogen}\address{Mozilla Corporation\\Mountain View, CA, USA}
-\ninept
-\twoauthors
-{Steinar Midtskogen}{Cisco Systems Inc.\\Lysaker, Norway\\\texttt{stemidts@cisco.com}}
-{Jean-Marc Valin}{Mozilla Corporation\\Mountain View, CA, USA\\\texttt{jmvalin@jmvalin.ca}}
+%\ninept
+%\twoauthors
+%{Steinar Midtskogen}{Cisco Systems Inc.\\Lysaker, Norway\\\texttt{stemidts@cisco.com}}
+%{Jean-Marc Valin}{Mozilla Corporation\\Mountain View, CA, USA\\\texttt{jmvalin@jmvalin.ca}}
+\author{%
+Steinar Midtskogen$^{\ast}$ and Jean-Marc Valin$^{\dag}$\\[0.5em]
+{\small\begin{minipage}{\linewidth}\begin{center}
+\begin{tabular}{ccc}
+$^{\ast}$Cisco Systems Inc. & \hspace*{0.5in} & $^{\dag}$Mozilla Corporation \\
+Lysaker, Norway && Mountain View, CA, USA\\
+\url{stemidts@cisco.com} && \url{jmvalin@jmvalin.ca}
+\end{tabular}
+\end{center}\end{minipage}}
+}
 
 \makeatletter
 
@@ -59,7 +69,7 @@ Alliance for Open Media (AOM) AV1 video codec in particular in low
 complexity configurations.
 \end{abstract}
 
-\begin{keywords}enhancement filter, video compression, AV1, Thor\end{keywords}
+%\begin{keywords}enhancement filter, video compression, AV1, Thor\end{keywords}
 
 \section{Introduction}
 
@@ -111,11 +121,11 @@ along a certain direction has a constant value. For each direction,
 we assign a line number $k$ to each pixel, as shown in Fig.~\ref{fig:Lines-for-direction}. 
 
 \begin{figure}
-\centering{\includegraphics[width=0.24\columnwidth]{dlines0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines3}}
+\centering{\includegraphics[width=0.18\columnwidth]{dlines0}\hspace{.5em}\includegraphics[width=0.18\columnwidth]{dlines1}\hspace{.5em}\includegraphics[width=0.18\columnwidth]{dlines2}\hspace{.5em}\includegraphics[width=0.18\columnwidth]{dlines3}}
 
 \vspace{.5em}
 
-\centering{\includegraphics[width=0.24\columnwidth]{dlines4}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines5}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines6}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{dlines7}}\caption{Line number $k$ for pixels following direction $d=0:7$ in an $8\times8$
+\centering{\includegraphics[width=0.18\columnwidth]{dlines4}\hspace{.5em}\includegraphics[width=0.18\columnwidth]{dlines5}\hspace{.5em}\includegraphics[width=0.18\columnwidth]{dlines6}\hspace{.5em}\includegraphics[width=0.18\columnwidth]{dlines7}}\caption{Line number $k$ for pixels following direction $d=0:7$ in an $8\times8$
 block.\label{fig:Lines-for-direction}}
 \end{figure}
 
@@ -181,7 +191,7 @@ with a small penalty due to the diagonal alignment, resulting in a completely si
 that of a DCT.
 
 \begin{figure}
-\centering{\includegraphics[width=1.0\columnwidth]{direction}}\caption{Example of direction search for an $8\times8$ block. The patterns
+\centering{\includegraphics[width=0.7\columnwidth]{direction}}\caption{Example of direction search for an $8\times8$ block. The patterns
 shown are based on the $\mu_{d,k}$ values. In this case, the 45-degree
 direction is the one that minimizes $\sigma_{d}^{2}$, so it would
 be selected by the search. Note that the error values $\sigma_{d}$
@@ -260,13 +270,13 @@ illustrates the effect of damping. The function is anti-symmetric around $d=0$.
 
 
 \begin{figure}
-\centering{\includegraphics[width=0.9\columnwidth]{strength}}
+\centering{\includegraphics[width=0.6\columnwidth]{strength}}
 \caption{Constraint function for different strength values $S$ (constant $D$).\label{fig:constraint-function-strength}}
 \end{figure}
 
 
 \begin{figure}
-\centering{\includegraphics[width=0.9\columnwidth]{damping}}
+\centering{\includegraphics[width=0.6\columnwidth]{damping}}
 \caption{Constraint function for different damping values $D$ (constant $S$).\label{fig:constraint-function-damping}}
 \end{figure}
 
@@ -307,11 +317,11 @@ R &= (n,m) | {w}^{(p)}_{d,m,n}+{w}^{(s)}_{d,m,n} \ne 0
 \end{align}
 
 \begin{figure}
-\centering{\includegraphics[width=0.24\columnwidth]{pri0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri3}}
+\centering{\includegraphics[width=0.15\columnwidth]{pri0}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{pri1}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{pri2}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{pri3}}
 
 \vspace{.5em}
 
-\centering{\includegraphics[width=0.24\columnwidth]{pri4}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri5}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri6}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri7}}
+\centering{\includegraphics[width=0.15\columnwidth]{pri4}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{pri5}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{pri6}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{pri7}}
 \caption{Primary filter taps following direction $d=0:7$. For even strengths $a=2$ and $b=4$, whereas for odd strengths $a=3$ and $b=3$.
 The filtered pixel in shown in gray.
 \label{fig:Primary-filter}}
@@ -319,7 +329,7 @@ The filtered pixel in shown in gray.
 
 
 \begin{figure}
-\centering{\includegraphics[width=0.24\columnwidth]{sec0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec3}}
+\centering{\includegraphics[width=0.15\columnwidth]{sec0}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{sec1}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{sec2}\hspace{.5em}\includegraphics[width=0.15\columnwidth]{sec3}}
 \caption{Secondary filter taps following direction $d=0:7$. The filtered pixel is shown in gray.\label{fig:Secondary-filter}}
 \end{figure}
 
@@ -387,7 +397,7 @@ Thor LL + LC & -6.17\% & -10.33\% & -4.13\% & -7.60\% & -6.11\%\tabularnewline
 
 
 \begin{figure}
-\centering{\includegraphics[width=\columnwidth]{cdef_vs_nothing}}
+\centering{\includegraphics[width=0.7\columnwidth]{cdef_vs_nothing}}
 \caption{Subjective A-B comparison (with ties) results for CDEF vs. no processing for the high-latency configuration.\label{fig:subjective}}
 \end{figure}
 
@@ -496,7 +506,7 @@ artifacts from coded images and videos. By taking into account the
 direction of the patterns, the risk of blurring is reduced. Objective
 results show a bit-rate reductions up to 4.5\% on AV1 and 11.3\% on Thor.
 
-\section{Acknowledgments}
+\section*{Acknowledgments}
 
 We would like to thank Thomas Daede for organizing the subjective test.
 
