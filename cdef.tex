@@ -59,7 +59,7 @@ Alliance for Open Media (AOM) AV1 video codec in particular in low
 complexity configurations.
 \end{abstract}
 
-\begin{keywords}enhancement filter, video compression, AV1, Thor\end{keywords}
+\begin{keywords}enhancement filter, directional filter, AV1\end{keywords}
 
 \section{Introduction}
 
@@ -129,16 +129,16 @@ pixels in line $k$ following direction $d$ and $N_{d,k}$ is the
 cardinality of $P_{d,k}$ (for example, in Fig.~\ref{fig:Lines-for-direction},
 $N_{1,0}=2$ and $N_{1,4}=8$). The SSD is then defined as:
 \begin{equation}
-\sigma_{d}^{2}=\sum_{k}\left[\sum_{p\in P_{d,k}}\left(x_{p}-\mu_{d,k}\right)^{2}\right]\ .\label{eq:direction-variance0}
+E_{d}^{2}=\sum_{k}\left[\sum_{p\in P_{d,k}}\left(x_{p}-\mu_{d,k}\right)^{2}\right]\ .\label{eq:direction-variance0}
 \end{equation}
 
 Substituting (\ref{eq:pixel-average}) into (\ref{eq:direction-variance0}) and
 simplifying results in
 \begin{equation}
-\sigma_{d}^{2}= \sum_{p}x_{p}^{2}-\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance1}
+E_{d}^{2}= \sum_{p}x_{p}^{2}-\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance1}
 \end{equation}
  Note that the simplifications leading to (\ref{eq:direction-variance1})
-are the same as to those allowing a variance to be computed as $\sigma_{x}^{2}=\sum x^{2}-\left(\sum x\right)^{2}/N$.
+are the same as to those allowing a variance to be computed as $\sigma_{x}^{2}=\frac{\sum x^{2}}{N}-\frac{\left(\sum x\right)^{2}}{N^2}$.
 Considering that the first term of (\ref{eq:direction-variance1})
 is constant with respect to $d$, we simply find the optimal direction
 $d_{opt}$ by maximizing the second term:
