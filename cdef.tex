@@ -54,7 +54,7 @@ efficiency. It takes into account the direction of edges and patterns
 being filtered. The filter works by identifying the direction of each
 block and then adaptively filtering with a high degree of control over
 the filter strength along the direction and across it.  The proposed
-enhancement or deringing filter is shown to improve the quality of the
+enhancement filter is shown to improve the quality of the
 Alliance for Open Media (AOM) AV1 video codec in particular in low
 complexity configurations.
 \end{abstract}
@@ -62,10 +62,12 @@ complexity configurations.
 \begin{keywords}enhancement filter, directional filter, AV1\end{keywords}
 
 \section{Introduction}
+\label{sec:intro}
 
-The main goal of deringing is to filter out coding artifacts while
-retaining the details of the image. In HEVC, this is achieved by the
-Sample Adaptive Offset~(SAO)~\cite{HEVC-SAO} algorithm that defines
+The main goal of the constrained directional enhancement filter (CDEF)
+is to filter out coding artifacts while
+retaining the details of the image. In HEVC, the
+Sample Adaptive Offset~(SAO)~\cite{HEVC-SAO} algorithm achieves a similar goal by defining
 signal offsets for different classes of pixels. Unlike SAO, the
 approach we take in AV1 is that of a non-linear spatial filter.  From
 the very beginning, the design of the filter was constrained to be
@@ -73,22 +75,22 @@ easily vectorizable (i.e. implementable with SIMD operations), which
 was not the case for other non-linear filters like the median
 filter~\cite{Median} and the bilateral filter~\cite{Bilateral}.
 
-The design of the deringing filter originates from the following observations.
-The amount of ringing in a coded image tends to be roughly proportional
+The CDEF design originates from the following observations.
+The amount of ringing artifacts in a coded image tends to be roughly proportional
 to the quantization step size. The amount of detail is a property
 of the input image, but the smallest detail actually retained in the
 quantized image tends to also be proportional to the quantization
 step size. For a given quantization step size, the amplitude of the
 ringing is generally less than the amplitude of the details.
 
-This paper describes the constrained directional enhancement filter
-(CDEF), a deringing filter that takes into account the direction of
-edges and patterns being filtered. CDEF works by identifying the
-direction of each block and then adaptively filtering along the
-identified direction and also to a lesser degree along directions 45
+CDEF works by identifying the
+direction of each block (Sec.~\ref{sec:direction-search}) and then adaptively filtering along the
+identified direction (Sec.~\ref{sec:nonlinear-lowpass}) and also to a lesser degree along directions 45
 degrees off the identified direction.  The filter strength along the
 direction and 45 degrees off it can be signalled separately, which
-allows a high degree of control over the blurring.
+allows a high degree of control over the blurring (Sec.~\ref{sec:signaling}).
+Sec.~\ref{sec:encoder-search} demonstrates an efficient encoder search, with
+results presented in Sec.~\ref{sec:results}.
 
 \section{Direction Search}
 \label{sec:direction-search}
@@ -393,6 +395,7 @@ Thor LL + LC & -6.17\% & -10.33\% & -4.13\% & -7.60\% & -6.11\%\tabularnewline
 
 
 \section{Signaling and Filter Blocks}
+\label{sec:signaling}
 
 Some CDEF parameters are signaled at the frame level, and some
 parameters may be signaled at the filter block ($64\times64$) level.  The following is
@@ -423,6 +426,7 @@ primary strength, the chroma skip condition flag and the chroma
 secondary strength are not signaled.
 
 \section{Encoder Search}
+\label{sec:encoder-search}
 
 On the encoder side, the search needs to determine both the frame level parameters
 (preset parameters, number of presets) and the filter block-level preset ID. Assuming
@@ -470,9 +474,10 @@ The damping value may be determined from
 the quantizer alone (larger damping for larger quantizer).
 
 \section{Results}
+\label{sec:results}
 
-We tested the deringing filter using the Are We Compressed
-Yet~\cite{AWCY} online testing tool using the AV1 codec and Thor codec, both
+We tested CDEF with the Are We Compressed
+Yet~\cite{AWCY} online testing tool using the AV1 and Thor codecs, both
 still in development at the time of writing. The results are shown in
 Table~\ref{tab:bd-rate} for the objective-1-fast test set.  These
 results reflect the gains in the codebases for git SHA's \texttt{e200b28}
