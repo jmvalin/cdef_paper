@@ -84,7 +84,7 @@ step size. For a given quantization step size, the amplitude of the
 ringing is generally less than the amplitude of the details.
 
 CDEF works by identifying the
-direction of each block (Sec.~\ref{sec:direction-search}) and then adaptively filtering along the
+direction~\cite{DaedeDCC} of each block (Sec.~\ref{sec:direction-search}) and then adaptively filtering along the
 identified direction (Sec.~\ref{sec:nonlinear-lowpass}) and also to a lesser degree along directions 45
 degrees off the identified direction.  The filter strength along the
 direction and 45 degrees off it can be signalled separately, which
@@ -143,13 +143,10 @@ are the same as to those allowing a variance to be computed as $\sigma_{x}^{2}=\
 Considering that the first term of (\ref{eq:direction-variance1})
 is constant with respect to $d$, we find the optimal direction
 $d_{opt}$ by maximizing the second term:
-\begin{equation}
-d_{opt}=\max_{d}s_{d}\,,\label{eq:direction-variance2}
-\end{equation}
-where 
-\begin{equation}
-s_{d}=\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance3}
-\end{equation}
+\begin{align}
+d_{opt}&=\max_{d}s_{d}\label{eq:direction-variance2}\\
+s_{d}&=\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\label{eq:direction-variance3}
+\end{align}
 
 We can avoid the division in (\ref{eq:direction-variance3}) by multiplying
 $s_{d}$ by 840, the least common multiple of the possible $N_{d,k}$
@@ -235,7 +232,7 @@ CDEF is based on a non-linear low-pass filter designed to remove coding artifact
 blurring sharp edges. This is achieved by selecting taps based on the
 identified direction, but also by preventing excessive blurring when the filter
 is applied across an edge. The latter is achieved through the use of a non-linear low-pass
-filter that deemphasizes taps that differ too much from the pixel being filtered.
+filter that deemphasizes taps that differ too much from the pixel being filtered~\cite{Midtskogen2017}.
 In one dimension, the non-linear filter can be expressed as
 \begin{equation}
 y\left(i\right)=x\left(i\right) +\!\!\sum_{m}w_k f\left(x\left(i+m) - x(i\right), S, D\right)\ ,\label{eq:linear-filter}
@@ -475,7 +472,7 @@ the quantizer alone (larger damping for larger quantizer).
 \label{sec:results}
 
 We tested CDEF with the Are We Compressed
-Yet~\cite{AWCY} online testing tool using the AV1 and Thor codecs, both
+Yet~\cite{AWCY} online testing tool using the AV1 and Thor~\cite{Midtskogen2017} codecs, both
 still in development at the time of writing. The results are shown in
 Table~\ref{tab:bd-rate} for the objective-1-fast test set.  These
 results reflect the gains in the codebases for git SHA's \texttt{e200b28}
