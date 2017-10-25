@@ -55,7 +55,7 @@ being filtered. The filter works by identifying the direction of each
 block and then adaptively filtering with a high degree of control over
 the filter strength along the direction and across it.  The proposed
 enhancement filter is shown to improve the quality of the
-Alliance for Open Media (AOM) AV1 video codec in particular in low
+Alliance for Open Media (AOM) AV1 and Thor video codecs in particular in low
 complexity configurations.
 \end{abstract}
 
@@ -280,7 +280,7 @@ reason, CDEF defines \textit{primary taps} and \textit{secondary taps}. The prim
 the direction $d$, and the weights are shown in Fig.~\ref{fig:Primary-filter}.  The weights for
 the primary taps alternate for every other strength, so that the weights for strengths 1, 3, 5,
 etc. are different from the weights for strengths 2, 4, 6, etc. This alternation is to be
-preserved for higher bit depths (more than 8 bit).  The secondary taps
+preserved for higher bit depths (more than 8 bit), when the strength step size is larger than 1.  The secondary taps
 form a cross, oriented $45^\circ$ off the direction $d$ and their weights are shown in
 Fig.~\ref{fig:Secondary-filter}. The complete 2-D CDEF filter is expressed as
 \begin{align}
@@ -339,7 +339,7 @@ have integer values between $0$ and $15$, and $S^{(s)}$ can be $0$, $1$,
 $2$ or $4$.  $D$ can be set to $3$, $4$, $5$ or $6$ for luma, and the
 damping value for chroma is always one less.  The damping value shall
 never be lower than the $\log_2 S$ to ensure that
-the shift value used to compute $2^{D-\lfloor{\log_{2}S}\rfloor}$ in (\ref{eq:constraint-function}) never
+the exponent of $2^{D-\lfloor{\log_{2}S}\rfloor}$ in (\ref{eq:constraint-function}) never
 becomes negative.  For instance, if for chroma $S^{(p)}=15$ and the luma damping is $3$,
 the chroma damping shall also be $3$ (and not 2) because $\left\lfloor\log_2 S^{(p)}\right\rfloor=3$.
 
@@ -393,8 +393,9 @@ Thor LL + LC & -6.17\% & -10.33\% & -4.13\% & -7.60\% & -6.11\%\tabularnewline
 \section{Signaling and Filter Blocks}
 \label{sec:signaling}
 
+The frame is divided into filter blocks of $64\times64$ pixels.
 Some CDEF parameters are signaled at the frame level, and some
-parameters may be signaled at the filter block ($64\times64$) level.  The following is
+may be signaled at the filter block level.  The following is
 signaled at the frame level: the damping $D$ (2 bit), the number of
 bits used for filter block signaling (0-3, 2 bits), and a list of 1, 2,
 4 or 8 presets.  One preset contains the luma primary strength (4
@@ -403,7 +404,7 @@ strength (2 bits), the chroma secondary strength, a luma skip
 condition bit, and a chroma skip condition bit (a total of 14 bits per
 preset).  The filtering is applied one filter block at a time.  For each
 filter block, the 0 - 3 bits are read to indicate the preset that will
-be used for this filter block.  The filter
+be used.  The filter
 parameters are only coded for filter blocks that are not completely
 skipped.  Such skipped filter blocks have CDEF disabled.
 Similarly, any skipped coding block within a filter block has filtering
@@ -466,7 +467,7 @@ the search complexity by only considering a subset of the 128 possible presets.
 This results in only a small loss ($<0.1\%$ BD-rate) in quality.
 
 The damping value may be determined from
-the quantizer alone (larger damping for larger quantizer).
+the quantizer alone (larger damping value for larger quantizer).
 
 \section{Results}
 \label{sec:results}
