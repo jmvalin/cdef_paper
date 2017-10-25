@@ -105,8 +105,8 @@ while being large enough to reliably estimate directions when applied
 to a quantized image. Having a constant direction over an $8\times8$
 region also makes vectorization of the filter easier.
 
-For each block we want to determine the direction that best matches
-the pattern in the block. This is done by minimizing the sum of squared
+For each block we determine the direction that best matches
+the pattern in the block by minimizing the sum of squared
 differences (SSD) between the quantized block and a perfectly directional
 block. A perfectly directional block is a block for which each line
 along a certain direction has a constant value. For each direction,
@@ -121,15 +121,14 @@ we assign a line number $k$ to each pixel, as shown in Fig.~\ref{fig:Lines-for-d
 block.\label{fig:Lines-for-direction}}
 \end{figure}
 
-For each direction $d$, the pixel average for line $k$ is determined
-by:
+For each direction $d$, the pixel average for line $k$ is
 \begin{equation}
 \mu_{d,k}=\frac{1}{N_{d,k}}\sum_{p\in P_{d,k}}x_{p}\ ,\label{eq:pixel-average}
 \end{equation}
 where $x_{p}$ is the value of pixel $p$, $P_{d,k}$ is the set of
 pixels in line $k$ following direction $d$ and $N_{d,k}$ is the
 cardinality of $P_{d,k}$ (for example, in Fig.~\ref{fig:Lines-for-direction},
-$N_{1,0}=2$ and $N_{1,4}=8$). The SSD is then defined as:
+$N_{1,0}=2$ and $N_{1,4}=8$). The SSD is then
 \begin{equation}
 E_{d}^{2}=\sum_{k}\left[\sum_{p\in P_{d,k}}\left(x_{p}-\mu_{d,k}\right)^{2}\right]\ .\label{eq:direction-variance0}
 \end{equation}
@@ -142,7 +141,7 @@ E_{d}^{2}= \sum_{p}x_{p}^{2}-\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x
  Note that the simplifications leading to (\ref{eq:direction-variance1})
 are the same as to those allowing a variance to be computed as $\sigma_{x}^{2}=\frac{\sum x^{2}}{N}-\frac{\left(\sum x\right)^{2}}{N^2}$.
 Considering that the first term of (\ref{eq:direction-variance1})
-is constant with respect to $d$, we simply find the optimal direction
+is constant with respect to $d$, we find the optimal direction
 $d_{opt}$ by maximizing the second term:
 \begin{equation}
 d_{opt}=\max_{d}s_{d}\,,\label{eq:direction-variance2}
