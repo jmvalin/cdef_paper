@@ -276,7 +276,7 @@ edges or patterns. However, directional filtering alone sometimes cannot
 sufficiently reduce ringing so we also want to use filter taps on pixels that do not
 lie along the main direction.
 To reduce the risk of blurring, these extra taps are treated more conservatively. For this
-reasons, CDEF defines \textit{primary taps} and \textit{secondary taps}. The primary taps follow
+reason, CDEF defines \textit{primary taps} and \textit{secondary taps}. The primary taps follow
 the direction $d$, and the weights are shown in Fig.~\ref{fig:Primary-filter}.  The weights for
 the primary taps alternate for every other strength, so that the weights for strengths 1, 3, 5,
 etc. are different from the weights for strengths 2, 4, 6, etc. This alternation is to be
