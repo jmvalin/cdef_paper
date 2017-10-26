@@ -373,7 +373,7 @@ preset).  The filtering is applied one filter block at a time.  For each
 filter block, the 0 - 3 bits are read to indicate the preset that will
 be used.  The filter
 parameters are only coded for filter blocks that are not completely
-skipped.  Such skipped filter blocks have CDEF disabled.
+skipped (i.e. have no coded residual).  Such skipped filter blocks have CDEF disabled.
 Similarly, any skipped coding block within a filter block has filtering
 disabled unless the skip condition bit is set for that filter block.
 
