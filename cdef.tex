@@ -48,7 +48,7 @@
 \maketitle
 \begin{abstract}
 This paper presents the constrained directional enhancement filter
-designed for the AV1 royalty-free video codec. The filter is based on
+designed for the AV1 royalty-free video codec. The in-loop filter is based on
 a non-linear low-pass filter and is designed for vectorization
 efficiency. It takes into account the direction of edges and patterns
 being filtered. The filter works by identifying the direction of each
@@ -64,7 +64,7 @@ complexity configurations.
 \section{Introduction}
 \label{sec:intro}
 
-The main goal of the constrained directional enhancement filter (CDEF)
+The main goal of the in-loop constrained directional enhancement filter (CDEF)
 is to filter out coding artifacts while
 retaining the details of the image. In HEVC, the
 Sample Adaptive Offset~(SAO)~\cite{HEVC-SAO} algorithm achieves a similar goal by defining
@@ -73,7 +73,7 @@ approach we take in AV1 is that of a non-linear spatial filter.  From
 the very beginning, the design of the filter was constrained to be
 easily vectorizable (i.e. implementable with SIMD operations), which
 was not the case for other non-linear filters like the median
-filter~\cite{Median} and the bilateral filter~\cite{Bilateral}.
+filter and the bilateral filter~\cite{Bilateral}.
 
 The CDEF design originates from the following observations.
 The amount of ringing artifacts in a coded image tends to be roughly proportional
@@ -476,12 +476,6 @@ results reflect the gains in the codebases for git SHA's \texttt{e200b28}~\cite{
 (8$^\mathrm{th}$ August 2017) and \texttt{b5e5cc5}~\cite{Thor-git} (21$^\mathrm{st}$ October 2017) for AV1 and Thor
 respectively.
 
-CDEF competes for the same gains as some other coding tools, in
-AV1 in particular the dual\_filter tool and to a lesser degree motion\_var
-and ext\_tx.  Disabling these tools in AV1 roughly doubles the CDEF gains.
-The Thor codec lacks these tools.  In medium to low complexity encoder configurations
-some tools while keeping CDEF enabled may give a good complexity/compression trade-off.
-
 Subjective tests conducted on AV1 for the high-latency configuration
 show a statistically-significant ($p<.05$) improvement for 3 out of 6 clips,
 as shown in Fig.~\ref{fig:subjective}. Considering that it usually takes in the order
@@ -489,6 +483,13 @@ of 5\% improvement in BD-rate to obtain such statistically significant results, 
 tested configuration is the one with the smallest BD-rate improvement, we
 believe the visual improvement is higher than the BD-rate results suggest. 
 
+The objective results show that CDEF performs better when encoding with fewer tools and
+simpler search algorithms. In some sense, CDEF "competes"
+for the same gains as some other coding tools. Considering that CDEF is significantly
+less complex to encode than many of the AV1 tools, it provides a good way of reducing
+the complexity of an encoder. 
+In terms of decoder complexity, CDEF represents between 3\% and 10\% of the AV1 decoder
+(depending on the configuration).
 
 \section{Conclusion}
 
