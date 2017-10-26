@@ -492,10 +492,15 @@ believe the visual improvement is higher than the BD-rate results suggest.
 
 \section{Conclusion}
 
-We have demonstrated an effective algorithm for removing coding
-artifacts from coded videos. By taking into account the
-direction of the patterns, the risk of blurring is reduced. Objective
+We have demonstrated CDEF, an effective in-loop filtering algorithm for removing coding
+artifacts in the AV1 and Thor video codecs. The filter is able to effectively remove
+artifacts without causing blurring through a combination of direction-adaptive filtering
+and a non-linear filter with signaled parameters. Objective
 results show a bit-rate reductions up to 4.5\% on AV1 and 10.3\% on Thor.
+These results are confirmed by subjective testing.
+
+CDEF should be applicable to other video codecs as well as image codecs. In the case of AV1,
+an open questions that remains is how to optimally combine its search with that of "Loop Restoration", another in-loop enhancement filter in AV1.
 
 \section{Acknowledgments}
 
