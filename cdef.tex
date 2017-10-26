@@ -226,9 +226,10 @@ are possible, but they are not shown here for clarity.\label{cap:direction-searc
 \section{Non-linear Low-pass Filter}
 
 \begin{figure}
-	\centering{\includegraphics[width=0.9\columnwidth]{strength}}
-	\centering{\includegraphics[width=0.9\columnwidth]{damping}}
-	\caption{Effect of strength (top) and damping (bottom) on $f(d, S, D)$.\label{fig:constraint-function-strength-damping}}
+\centering{\includegraphics[width=0.9\columnwidth]{strength}}
+\centering{\includegraphics[width=0.9\columnwidth]{damping}}
+\vspace{-1.em}
+\caption{Effect of strength (top) and damping (bottom) on $f(d, S, D)$.\label{fig:constraint-function-strength-damping}}
 \end{figure}
 
 \label{sec:nonlinear-lowpass}
@@ -280,10 +281,10 @@ y\left(i, j\right)=&x(i, j) + \mathrm{round}\bigg( \nonumber\\
 \label{eq:linear-filter2}
 \end{align}
 where $S^{(p)}$ and $S^{(s)}$ and the strengths of the primary and secondary taps, respectively,
-and $\mathrm{round}(\cdot)$ rounds to the nearest integer, with ties away from zero.
+and $\mathrm{round}(\cdot)$ rounds ties away from zero.
 
 Since the sum of all the primary and secondary weights exceed unity, it is possible (though rare) for
-the output $y(i,j)$ to change by more than the maximum difference between the input and the neighbouring
+the output $y(i,j)$ to change by more than the maximum difference between the input and the neighboring
 values. This is avoided by explicitly clamping the filter output based on the neighbouring pixels with
 non-zero weights:
 \begin{align}
@@ -300,6 +301,7 @@ R &= (n,m) | {w}^{(p)}_{d,m,n}+{w}^{(s)}_{d,m,n} \ne 0
 \vspace{.5em}
 
 \centering{\includegraphics[width=0.24\columnwidth]{pri4}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri5}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri6}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{pri7}}
+\vspace{-1.5em}
 \caption{Primary filter taps following direction $d=0:7$. For even strengths $a=2$ and $b=4$, whereas for odd strengths $a=3$ and $b=3$.
 The filtered pixel in shown in gray.
 \label{fig:Primary-filter}}
@@ -308,6 +310,7 @@ The filtered pixel in shown in gray.
 
 \begin{figure}
 \centering{\includegraphics[width=0.24\columnwidth]{sec0}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec1}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec2}\hspace{.35em}\includegraphics[width=0.24\columnwidth]{sec3}}
+\vspace{-1.5em}
 \caption{Secondary filter taps following direction $d=0:7$. The filtered pixel is shown in gray.\label{fig:Secondary-filter}}
 \end{figure}
 
@@ -316,7 +319,7 @@ block being filtered. When processing the pixel at position $(i,j)$, the
 filter is allowed to use pixels $x(i+m,j+m)$ lying outside of the
 $8\times8$ block, or even outside of the superblock. If
 the input pixel lies outside of the frame (visible area), then the pixel
-is ignored, i.e. $f(d,S,D)=0$. To maximize parallelism, CDEF always operates
+is ignored ($f(d,S,D)=0$). To maximize parallelism, CDEF always operates
 on the input (post-deblocking) pixels $x(i,j)$ so filtered pixels are never reused
 for filtering other pixels.
 
