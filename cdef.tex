@@ -364,16 +364,16 @@ The frame is divided into filter blocks of $64\times64$ pixels.
 Some CDEF parameters are signaled at the frame level, and some
 may be signaled at the filter block level.  The following is
 signaled at the frame level: the damping $D$ (2 bit), the number of
-bits used for filter block signaling (0-3, 2 bits), and a list of 1, 2,
-4 or 8 presets.  One preset contains the luma primary strength (4
-bits), the chroma primary strength (4 bits), the luma secondary
-strength (2 bits), the chroma secondary strength, a luma skip
-condition bit, and a chroma skip condition bit (a total of 14 bits per
-preset).  The filtering is applied one filter block at a time.  For each
-filter block, the 0 - 3 bits are read to indicate the preset that will
-be used.  The filter
+bits used for filter block signaling (0-3, 2~bits), and a list of 1, 2,
+4 or 8 presets.  One preset contains the luma and chroma primary strengths (4
+bits each), the luma and chroma secondary
+strengths (2~bits each), as well as the luma and chroma skip
+condition bits, for a total of 14 bits per
+preset.  For each
+filter block, 0 to 3 bits are used to indicate which of the preset is used.
+The filter
 parameters are only coded for filter blocks that are not completely
-skipped (i.e. have no coded residual).  Such skipped filter blocks have CDEF disabled.
+skipped (no coded residual).  Such skipped filter blocks have CDEF disabled.
 Similarly, any skipped coding block within a filter block has filtering
 disabled unless the skip condition bit is set for that filter block.
 
