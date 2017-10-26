@@ -317,7 +317,7 @@ The filtered pixel in shown in gray.
 The direction, strength and damping parameters are constant over each $8\times8$
 block being filtered. When processing the pixel at position $(i,j)$, the
 filter is allowed to use pixels $x(i+m,j+m)$ lying outside of the
-$8\times8$ block, or even outside of the superblock. If
+$8\times8$ block. If
 the input pixel lies outside of the frame (visible area), then the pixel
 is ignored ($f(d,S,D)=0$). To maximize parallelism, CDEF always operates
 on the input (post-deblocking) pixels $x(i,j)$ so filtered pixels are never reused
