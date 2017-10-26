@@ -432,11 +432,11 @@ areas (e.g. grass). Instead, we use a modified version of SSE that takes into ac
 contrast in a similar way to the structural similarity (SSIM) metric~\cite{wang2004image}. The
 distortion metric is the sum over the filter block of the following $8\times8$ distortion function:
 \begin{equation}
-D_{8\times8} = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}\cdot\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2\ ,
+D_{8\times8} = \frac{\sigma_s^2 + \sigma_d^2 + C_1}{2\sqrt{\sigma_s^2\sigma_d^2 + C_2}}\cdot\left\Vert\mathbf{s}-\mathbf{d}\right\Vert^2\ ,\label{eq:cdef-dist}
 \end{equation}
 where $\sigma_s^2$ and $\sigma_d^2$ are the variances of $\mathbf{s}$ and $\mathbf{d}$ over the
-block and the constants are set to $C_1=6.25$ and $C_2=312.5$ for 8-bit depth. Since the distortion
-metric is only used in the encoder, it is not normative.
+block and the constants are set to $C_1=6.25$ and $C_2=312.5$ for 8-bit depth. Using (\ref{eq:cdef-dist}) degrades PSNR results, but improves visual quality.
+Since the distortion metric is only used in the encoder, it is not normative.
 
 There are many possible strategies for choosing the presets for the frame, depending
 on the acceptable complexity requirements and whether the encoder is allowed to make
