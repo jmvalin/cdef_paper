@@ -181,8 +181,7 @@ that of a DCT.
 \begin{figure}
 \centering{\includegraphics[width=1.0\columnwidth]{direction}}\caption{Example of direction search for an $8\times8$ block. The patterns
 shown are based on the $\mu_{d,k}$ values. In this case, the 45-degree
-direction is the one that minimizes $E_{d}^{2}$, so it would
-be selected by the search. Note that the error values $E_{d}$
+direction is selected because it minimizes $E_{d}^{2}$. The error values $E_{d}$
 shown are never computed in practice (only $s_{d}$ is). \label{fig:Example-of-direction}}
 
 \end{figure}
@@ -240,9 +239,9 @@ y\left(i\right)=x\left(i\right) +\!\!\sum_{m}w_k f\left(x\left(i+m) - x(i\right)
 where $w_k$ are the filter weights and $f(d, S, D)$ is a \textit{constraint function} operating
 on the difference between the filtered pixel and each of the
 neighbouring pixels. For small differences, $f\left(d, S, D\right)=d$, making the filter in
-(\ref{eq:linear-filter}) behave like a linear filter. However, when the difference is large,
+(\ref{eq:linear-filter}) behave like a linear filter. When the difference is large,
 $f\left(d, S, D\right)=0$, which effectively ignores the filter tap.
-The filter is parametrized by a \textit{strength} $S$ and a \textit{damping} value $D$:
+The filter is parametrized by a \textit{strength} $S$ and a \textit{damping} $D$:
 \begin{equation}
 f\left(d, S, D\right)=\left\{\begin{array}{ll}
 \!\!\min\left(d, \max\left(0, S-\left\lfloor{\frac{d}{2^{D-\lfloor{\log_{2}S}\rfloor}}}\right\rfloor\right)\right) , d\ge0\\
@@ -259,13 +258,13 @@ illustrates the effect of damping. The function is anti-symmetric around $d=0$.
 
 \begin{figure}
 \centering{\includegraphics[width=0.9\columnwidth]{strength}}
-\caption{Constraint function for different strength values $S$ (constant $D$).\label{fig:constraint-function-strength}}
+\caption{Constraint function for different strengths $S$ (constant $D$).\label{fig:constraint-function-strength}}
 \end{figure}
 
 
 \begin{figure}
 \centering{\includegraphics[width=0.9\columnwidth]{damping}}
-\caption{Constraint function for different damping values $D$ (constant $S$).\label{fig:constraint-function-damping}}
+\caption{Constraint function for different damping $D$ (constant $S$).\label{fig:constraint-function-damping}}
 \end{figure}
 
 \subsection{Directional filter}
@@ -351,15 +350,17 @@ damping value is less critical for compression gains than picking the
 optimal strengths.  $S^{(p)}$ and $S^{(s)}$ are chosen independently for
 luma and chroma.
 
-The signaled primary strength $S^{(p)}$ is adjusted for luma using a
-variance $v$ (see algorithm~\ref{cap:direction-search}) for the $8\times8$ block as follows:
+
+The signaled luma primary strength $S^{(p)}$ is adjusted for each $8\times8$
+block using the \textit{variance} value computed in algorithm~\ref{cap:direction-search}:
 \begin{equation}
 S^{(p)}_{adj}=\left\{ \begin{array}{ll}
 \left\lfloor\frac{S^{(p)} \left(4 + \min\left(\left\lfloor \log_2\left\lfloor\frac{v}{2^{16}}\right\rfloor\right\rfloor, 12\right)\right) + 8}{16}\right\rfloor &, v \ge 2^{10}\\
 0 &, \mathrm{otherwise}
 \end{array}\right. \label{eq:strength-adjustment}
 \end{equation}
-This adjustment is not applied for chroma, nor for the secondary strength $S^{(s)}$.
+The adjustment makes the filtering adapt to the amount of directional contrast
+and requires no signaling.
 
 \begin{table}
 \caption{CDEF Bj{\o}ntegaard-delta~\cite{Testing-draft} rate for
@@ -493,7 +494,7 @@ most types of video content, as shown in Fig.~\ref{fig:subjective}.
 \section{Conclusion}
 
 We have demonstrated an effective algorithm for removing coding
-artifacts from coded images and videos. By taking into account the
+artifacts from coded videos. By taking into account the
 direction of the patterns, the risk of blurring is reduced. Objective
 results show a bit-rate reductions up to 4.5\% on AV1 and 10.3\% on Thor.
 
