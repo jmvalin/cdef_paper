@@ -276,11 +276,11 @@ form a cross, oriented $45^\circ$ off the direction $d$ and their weights are sh
 Fig.~\ref{fig:Secondary-filter}. The complete 2-D CDEF filter is expressed as
 \begin{align}
 y\left(i, j\right)=&x(i, j) + \mathrm{round}\bigg( \nonumber\\
- & \sum_{m,n}{w}'_{d,m,n}f\left(x\left(m, n) - x(i,j\right), S', D\right) \nonumber\\
-+& \sum_{m,n}{w}''_{d,m,n}f\left(x\left(m, n) - x(i,j\right), S'', D\right) \bigg)\ ,
+ & \sum_{m,n}{w}^{(p)}_{d,m,n}f\left(x\left(m, n) - x(i,j\right), S^{(p)}, D\right) \nonumber\\
++& \sum_{m,n}{w}^{(s)}_{d,m,n}f\left(x\left(m, n) - x(i,j\right), S^{(s)}, D\right) \bigg)\ ,
 \label{eq:linear-filter2}
 \end{align}
-where $S'$ and $S''$ and the strengths of the primary and secondary taps, respectively,
+where $S^{(p)}$ and $S^{(s)}$ and the strengths of the primary and secondary taps, respectively,
 and $\mathrm{round}(\cdot)$ rounds ties away from zero.
 
 Since the sum of all the primary and secondary weights exceed unity, it is possible (though rare) for
@@ -291,7 +291,7 @@ non-zero weights:
 y_{clip}(i,j) &= \min\left(y_{max}, \max\left(y_{min}, y(i,j) \right) \right)\\
 y_{min} &= \min_{m, n \in R}(x(i+m,j+n)) \\
 y_{max} &= \max_{m, n \in R}(x(i+m,j+n)) \\
-R &= (n,m) | {w}'_{d,m,n}+{w}''_{d,m,n} \ne 0
+R &= (n,m) | {w}^{(p)}_{d,m,n}+{w}^{(s)}_{d,m,n} \ne 0
 \label{eq:cap-function}
 \end{align}
 
@@ -325,30 +325,30 @@ for filtering other pixels.
 
 \subsection{Valid strengths and damping values}
 
-The strengths $S'$ and $S''$ and damping $D$ must be set high
+The strengths $S^{(p)}$ and $S^{(s)}$ and damping $D$ must be set high
 enough to smooth out coding artifacts, but low enough to avoid
-blurring details in the image.  For 8-bit content $S'$ ranges between $0$ and $15$, and $S''$ can be $0$, $1$,
+blurring details in the image.  For 8-bit content $S^{(p)}$ ranges between $0$ and $15$, and $S^{(s)}$ can be $0$, $1$,
 $2$ or $4$.  $D$ ranges from $3$ to $6$ for luma, and the
 damping value for chroma is always one less.  $D$ shall
 never be lower than the $\log_2 S$ to ensure that
 the exponent of $2^{D-\lfloor{\log_{2}S}\rfloor}$ in (\ref{eq:constraint-function}) never
-becomes negative.  For instance, if for chroma $S'=15$ and the luma damping is $3$,
-the chroma damping shall also be $3$ (and not 2) because $\left\lfloor\log_2 S'\right\rfloor=3$.
+becomes negative.  For instance, if for chroma $S^{(p)}=15$ and the luma damping is $3$,
+the chroma damping shall also be $3$ (and not 2) because $\left\lfloor\log_2 S^{(p)}\right\rfloor=3$.
 
-For higher bit depth (more than 8 bits), $S'$ and $S''$ are scaled according to
+For higher bit depth (more than 8 bits), $S^{(p)}$ and $S^{(s)}$ are scaled according to
 the extra bit depth, and $D$ is offset accordingly. For example, 12-bit
-content can have $S'$ values of $0$, $16$, $32$, $...$, $240$, and
+content can have $S^{(p)}$ values of $0$, $16$, $32$, $...$, $240$, and
 $D$ ranges from $7$ to $10$.  Picking the optimal
 damping value is less critical for compression gains than picking the
-optimal strengths.  $S'$ and $S''$ are chosen independently for
+optimal strengths.  $S^{(p)}$ and $S^{(s)}$ are chosen independently for
 luma and chroma.
 
 
-The signaled luma primary strength $S'$ is adjusted for each $8\times8$
+The signaled luma primary strength $S^{(p)}$ is adjusted for each $8\times8$
 block using the \textit{variance} value computed in algorithm~\ref{cap:direction-search}:
 \begin{equation}
-S'_{adj}=\left\{ \begin{array}{ll}
-\left\lfloor\frac{S' \left(4 + \min\left(\left\lfloor \log_2\left\lfloor\frac{v}{2^{16}}\right\rfloor\right\rfloor, 12\right)\right) + 8}{16}\right\rfloor &, v \ge 2^{10}\\
+S^{(p)}_{adj}=\left\{ \begin{array}{ll}
+\left\lfloor\frac{S^{(p)} \left(4 + \min\left(\left\lfloor \log_2\left\lfloor\frac{v}{2^{16}}\right\rfloor\right\rfloor, 12\right)\right) + 8}{16}\right\rfloor &, v \ge 2^{10}\\
 0 &, \mathrm{otherwise}
 \end{array}\right. \label{eq:strength-adjustment}
 \end{equation}
@@ -442,7 +442,7 @@ There are many possible strategies for choosing the presets for the frame, depen
 on the acceptable complexity requirements and whether the encoder is allowed to make
 two passes through the frame. In the two-pass case, the first step is to measure the
 distortion $D_{b,p}$ for each filter block b, for each combination $p$ of 
-$S'$, $S''$ and skip condition bit
+$S^{(p)}$, $S^{(s)}$ and skip condition bit
 ($16\times4\times2=128$ parameter combinations) and for each plane. 
 Once the distortion values are computed, the goal is to find the two sets of presets
 $P_{\mathrm{luma}}$ and $P_{\mathrm{chroma}}$ that minimize the rate-distortion cost
