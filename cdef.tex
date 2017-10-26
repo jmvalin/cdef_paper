@@ -237,7 +237,7 @@ CDEF is based on a non-linear low-pass filter designed to remove coding artifact
 blurring sharp edges. This is achieved by selecting taps based on the
 identified direction, but also by preventing excessive blurring when the filter
 is applied across an edge. The latter is achieved through the use of a non-linear low-pass
-filter that deemphasizes taps that differ too much from the pixel being filtered~\cite{Midtskogen2017}.
+filter that deemphasizes pixels that differ too much from the pixel being filtered~\cite{Midtskogen2017}.
 In one dimension, the non-linear filter is expressed as
 \begin{equation}
 y\left(i\right)=x\left(i\right) +\!\!\sum_{m}w_k f\left(x\left(i+m) - x(i\right), S, D\right)\ ,\label{eq:linear-filter}
