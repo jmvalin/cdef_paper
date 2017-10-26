@@ -95,8 +95,8 @@ results presented in Sec.~\ref{sec:results}.
 \section{Direction Search}
 \label{sec:direction-search}
 
-We start by describing the direction search. The search operates on the
-reconstructed pixels, just after the deblocking is applied. Since
+The search operates on the
+reconstructed pixels, just after the deblocking filter is applied. Since
 those pixels are available to the decoder, no signalling is required
 for the directions.
 The direction search operates on $8\times8$ blocks, which is
@@ -158,9 +158,10 @@ signed integer.
 
 Fig. \ref{fig:Example-of-direction} shows an example of a direction
 search for an $8\times8$ block containing a line. 
-The step-by-step process is described in algorithm~\ref{cap:direction-search}.  The search is only
-done for the luma component, and the direction found in this search
-is used for the chroma components.
+The step-by-step process is described in algorithm~\ref{cap:direction-search}. 
+To save on decoder complexity, we assume that luma and chroma are usually correlated, so
+the search is only
+done for the luma component, and the same direction is used for the chroma components.
 
 In total, the search for all 8 directions requires the following
 arithmetic operations:
@@ -172,9 +173,9 @@ can be implemented with 294 additions (reusing partial sums of adjacent pixels).
 \item Finding the largest $s_d$ value requires 7 comparisons.
 \end{enumerate}
 
-The total is 376~additions, 124~multiplies and 7 comparisons. That is about 1/3
+The total is 376~additions, 124~multiplies and 7 comparisons. That is about 30\%
 fewer operations than an 8x8 DCT of the same size. The code can be efficiently vectorized,
-with a small penalty due to the diagonal alignment, resulting in a completely similar to
+with a small penalty due to the diagonal alignment, resulting in a complexity similar to
 that of a DCT.
 
 \begin{figure}
