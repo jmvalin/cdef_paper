@@ -210,7 +210,7 @@ shown are never computed in practice (only $s_{d}$ is). \label{fig:Example-of-di
   \ENDIF
 \ENDFOR
 \STATE $\mathrm{direction} \leftarrow \mathrm{best\_}d$
-\STATE $\mathrm{variance} \leftarrow s[\mathrm{best\_}d] - s[(\mathrm{best\_}d+4) \mod 8]$
+\STATE $\mathrm{directional\_contrast} \leftarrow s[\mathrm{best\_}d] - s[(\mathrm{best\_}d+4) \mod 8]$
 \end{algorithmic}
 \end{varwidth}% 
 }
@@ -345,7 +345,7 @@ luma and chroma.
 
 
 The signaled luma primary strength $S^{(p)}$ is adjusted for each $8\times8$
-block using the \textit{variance} value computed in algorithm~\ref{cap:direction-search}:
+block using the \textit{directional\_contrast} value ($v$) computed in algorithm~\ref{cap:direction-search}:
 \begin{equation}
 S^{(p)}_{adj}=\left\{ \begin{array}{ll}
 \left\lfloor\frac{S^{(p)} \left(4 + \min\left(\left\lfloor \log_2\left\lfloor\frac{v}{2^{16}}\right\rfloor\right\rfloor, 12\right)\right) + 8}{16}\right\rfloor &, v \ge 2^{10}\\
