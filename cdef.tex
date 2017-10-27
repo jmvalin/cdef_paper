@@ -172,10 +172,10 @@ can be implemented with 294 additions (reusing partial sums of adjacent pixels).
 \item Finding the largest $s_d$ value requires 7 comparisons.
 \end{enumerate}
 
-The total is 376~additions, 124~multiplies and 7 comparisons. That is about 30\%
-fewer operations than an 8x8 DCT of the same size. The code can be efficiently vectorized,
+The total is 376~additions, 124~multiplies and 7 comparisons. That is about two thirds of the number of operations required
+for the 8x8 IDCT in HEVC~\cite{Budagavi2014}. The code can be efficiently vectorized,
 with a small penalty due to the diagonal alignment, resulting in a complexity similar to
-that of a DCT.
+that of an 8x8 IDCT.
 
 \begin{figure}
 \centering{\includegraphics[width=1.0\columnwidth]{direction}}\caption{Example of direction search for an $8\times8$ block. The patterns
