@@ -96,7 +96,7 @@ results presented in Sec.~\ref{sec:results}.
 
 The search operates on the
 reconstructed pixels, just after the deblocking filter is applied. Since
-those pixels are available to the decoder, no signalling is required
+those pixels are available to the decoder, no signaling is required
 for the directions.
 The direction search operates on $8\times8$ blocks, which is
 fine enough to adequately handle non-straight edges,
@@ -244,7 +244,7 @@ y\left(i\right)=x\left(i\right) +\!\!\sum_{m}w_k f\left(x\left(i+m) - x(i\right)
 \end{equation}
 where $w_k$ are the filter weights and $f(d, S, D)$ is a \textit{constraint function} operating
 on the difference between the filtered pixel and each of the
-neighbouring pixels. For small differences, $f\left(d, S, D\right)=d$, making the filter in
+neighboring pixels. For small differences, $f\left(d, S, D\right)=d$, making the filter in
 (\ref{eq:linear-filter}) behave like a linear filter. When the difference is large,
 $f\left(d, S, D\right)=0$, which effectively ignores the filter tap.
 The filter is parametrized by a \textit{strength} $S$ and a \textit{damping} $D$:
@@ -284,8 +284,8 @@ where $S^{(p)}$ and $S^{(s)}$ and the strengths of the primary and secondary tap
 and $\mathrm{round}(\cdot)$ rounds ties away from zero.
 
 Since the sum of all the primary and secondary weights exceed unity, it is possible (though rare) for
-the output $y(i,j)$ to change by more than the maximum difference between the input and the neighbouring
-values. This is avoided by explicitly clamping the filter output based on the neighbouring pixels with
+the output $y(i,j)$ to change by more than the maximum difference between the input and the neighboring
+values. This is avoided by explicitly clamping the filter output based on the neighboring pixels with
 non-zero weights:
 \begin{align}
 y_{clip}(i,j) &= \min\left(y_{max}, \max\left(y_{min}, y(i,j) \right) \right)\\
