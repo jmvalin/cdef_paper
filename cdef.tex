@@ -85,9 +85,8 @@ ringing is generally less than the amplitude of the details.
 
 CDEF works by identifying the
 direction~\cite{DaedeDCC} of each block (Sec.~\ref{sec:direction-search}) and then adaptively filtering along the
-identified direction (Sec.~\ref{sec:nonlinear-lowpass}) and also to a lesser degree along directions 45
-degrees off the identified direction.  The filter strength along the
-direction and 45 degrees off it can be signalled separately, which
+identified direction (Sec.~\ref{sec:nonlinear-lowpass}) and to a lesser degree along directions rotated
+45~degrees from the identified direction.  The filter strengths are signaled explicitly, which
 allows a high degree of control over the blurring (Sec.~\ref{sec:signaling}).
 Sec.~\ref{sec:encoder-search} demonstrates an efficient encoder search, with
 results presented in Sec.~\ref{sec:results}.
@@ -418,7 +417,7 @@ secondary strength are not signaled.
 \begin{figure}
 \centering{\includegraphics[width=\columnwidth]{cdef_vs_nothing}}
 \vspace{-1.5em}
-\caption{Subjective A-B comparison (with ties) results for CDEF vs. no processing for the high-latency configuration.\label{fig:subjective}}
+\caption{Subjective A-B comparison results (with ties) for CDEF vs. no processing for the high-latency configuration.\label{fig:subjective}}
 \end{figure}
 
 On the encoder side, the search needs to determine both the frame level parameters
@@ -471,7 +470,7 @@ the quantizer alone (larger damping value for larger quantizer).
 
 We tested CDEF with the Are We Compressed
 Yet~\cite{AWCY} online testing tool using the AV1 and Thor~\cite{Bjontegaard2016,Davies2016} codecs, both
-still in development at the time of writing. The results are shown in
+still in development at the time of writing. BD-rate results for PSNR, PSNR-HVS~\cite{PSHRHVSM}, CIEDE2000~\cite{luo2001development}, SSIM~\cite{wang2004image}, and MS-SSIM~\cite{wang2003multiscale} are shown in
 Table~\ref{tab:bd-rate} for the objective-1-fast test set.  These
 results reflect the gains in the codebases for git SHA's \texttt{e200b28}~\cite{AV1-git}
 (8$^\mathrm{th}$ August 2017) and \texttt{b5e5cc5}~\cite{Thor-git} (21$^\mathrm{st}$ October 2017) for AV1 and Thor
