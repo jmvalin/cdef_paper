@@ -373,7 +373,7 @@ preset.  For each
 filter block, 0 to 3 bits are used to indicate which preset is used.
 The filter
 parameters are only coded for filter blocks that have some coded residual.
-Such ``skipped" filter blocks have CDEF disabled.
+Such ``skipped'' filter blocks have CDEF disabled.
 In filter blocks that do have some coded residual, any $8\times 8$ block with
 no coded residual also has filtering disabled unless the skip condition bit is set
 in that filter block's preset.
@@ -485,7 +485,7 @@ tested configuration is the one with the smallest BD-rate improvement, we
 believe the visual improvement is higher than the BD-rate results suggest. 
 
 The objective results show that CDEF performs better when encoding with fewer tools and
-simpler search algorithms. In some sense, CDEF ``competes"
+simpler search algorithms. In some sense, CDEF ``competes''
 for the same gains as some other coding tools. Considering that CDEF is significantly
 less complex to encode than many of the AV1 tools, it provides a good way of reducing
 the complexity of an encoder. 
@@ -502,7 +502,7 @@ results show a bit-rate reductions up to 4.5\% on AV1 and 10.3\% on Thor.
 These results are confirmed by subjective testing.
 
 CDEF should be applicable to other video codecs as well as image codecs. In the case of AV1,
-an open questions that remains is how to optimally combine its search with that of "Loop Restoration"~\cite{Mukherjee2017}, another in-loop enhancement filter in AV1.
+an open questions that remains is how to optimally combine its search with that of ``Loop Restoration''~\cite{Mukherjee2017}, another in-loop enhancement filter in AV1.
 
 \section{Acknowledgments}
 
