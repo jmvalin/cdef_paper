@@ -88,27 +88,26 @@ direction~\cite{DaedeDCC} of each block (Sec.~\ref{sec:direction-search}) and th
 identified direction (Sec.~\ref{sec:nonlinear-lowpass}) and to a lesser degree along directions rotated
 45~degrees from the identified direction.  The filter strengths are signaled explicitly, which
 allows a high degree of control over the blurring (Sec.~\ref{sec:signaling}).
-Sec.~\ref{sec:encoder-search} demonstrates an efficient encoder search, with
+Sec.~\ref{sec:encoder-search} demonstrates an efficient encoder search for the filter strengths, with
 results presented in Sec.~\ref{sec:results}.
 
 \section{Direction Search}
 \label{sec:direction-search}
 
-The search operates on the
-reconstructed pixels, just after the deblocking filter is applied. Since
-those pixels are available to the decoder, no signaling is required
-for the directions.
-The direction search operates on $8\times8$ blocks, which is
-fine enough to adequately handle non-straight edges,
+The direction search operates on the
+reconstructed pixels, just after the deblocking filter. Since
+those pixels are available to the decoder, the directions require no signaling.
+The search operates on $8\times8$ blocks, which are
+small enough to adequately handle non-straight edges,
 while being large enough to reliably estimate directions when applied
 to a quantized image. Having a constant direction over an $8\times8$
 region also makes vectorization of the filter easier.
 
 For each block we determine the direction that best matches
 the pattern in the block by minimizing the sum of squared
-differences (SSD) between the quantized block and a perfectly directional
-block. A perfectly directional block is a block for which each line
-along a certain direction has a constant value. For each direction,
+differences (SSD) between the quantized block and the closest perfectly directional
+block. A perfectly directional block is a block where all of the pixels along
+a line in one direction have the same value. For each direction,
 we assign a line number $k$ to each pixel, as shown in Fig.~\ref{fig:Lines-for-direction}. 
 
 \begin{figure}
@@ -150,17 +149,16 @@ s_{d}&=\sum_{k}\frac{1}{N_{d,k}}\left(\sum_{p\in P_{d,k}}x_{p}\right)^{2}\ .\lab
 We can avoid the division in (\ref{eq:direction-variance3}) by multiplying
 $s_{d}$ by 840, the least common multiple of the possible $N_{d,k}$
 values ($1\le N_{d,k}\le8$). When using 8\nobreakdash-bit pixel
-data (for higher bit depths, we downscale to 8~bits), and centering
-the values such that $-128\le x_{p}\le127$, then $840s_{d}$ and
-all calculations leading to that value fit in a 32\nobreakdash-bit
-signed integer.
+data, and centering the values such that $-128\le x_{p}\le127$, then $840s_{d}$ and
+all calculations needed for $s_{d}$ fit in a 32\nobreakdash-bit
+signed integer. For higher bit depths, we downscale the pixels to $8$ bits
+during the direction search.
 
 Fig. \ref{fig:Example-of-direction} shows an example of a direction
 search for an $8\times8$ block containing a line. 
-The step-by-step process is described in algorithm~\ref{cap:direction-search}. 
-To save on decoder complexity, we assume that luma and chroma are usually correlated, so
-the search is only
-done for the luma component, and the same direction is used for the chroma components.
+The step-by-step process is described in algorithm~\ref{cap:direction-search}.
+To save on decoder complexity, we assume that luma and chroma directions are correlated,
+and only search the luma component. The same direction is used for the chroma components.
 
 In total, the search for all 8 directions requires the following
 arithmetic operations:
@@ -233,8 +231,8 @@ are possible, but they are not shown here for clarity.\label{cap:direction-searc
 \end{figure}
 
 \label{sec:nonlinear-lowpass}
-CDEF is based on a non-linear low-pass filter designed to remove coding artifacts without
-blurring sharp edges. This is achieved by selecting taps based on the
+CDEF uses a non-linear low-pass filter designed to remove coding artifacts without
+blurring sharp edges. It achieves this by selecting filter tap locations based on the
 identified direction, but also by preventing excessive blurring when the filter
 is applied across an edge. The latter is achieved through the use of a non-linear low-pass
 filter that deemphasizes pixels that differ too much from the pixel being filtered~\cite{Midtskogen2017}.
@@ -264,14 +262,13 @@ the effect of the strength and damping on $f(\cdot)$. The function is anti-symme
 The main reason for identifying the direction of the Section~\ref{sec:direction-search} is to
 align the filter taps along that direction to reduce ringing while preserving the directional
 edges or patterns. However, directional filtering alone sometimes cannot
-sufficiently reduce ringing so we also want to use filter taps on pixels that do not
+sufficiently reduce ringing. We also want to use filter taps on pixels that do not
 lie along the main direction.
 To reduce the risk of blurring, these extra taps are treated more conservatively. For this
 reason, CDEF defines \textit{primary taps} and \textit{secondary taps}. The primary taps follow
-the direction $d$, and the weights are shown in Fig.~\ref{fig:Primary-filter}.  The weights for
-the primary taps alternate for every other strength, so that the weights for strengths 1, 3, 5,
-etc. are different from the weights for strengths 2, 4, 6, etc. This alternation is to be
-preserved for higher bit depths (more than 8 bit), when the strength step size is larger than 1.  The secondary taps
+the direction $d$, and the weights are shown in Fig.~\ref{fig:Primary-filter}.  For the primary
+taps, the weights alternate for every other strength, so that the weights for strengths 1, 3, 5,
+etc. are different from the weights for strengths 2, 4, 6, etc. The secondary taps
 form a cross, oriented $45^\circ$ off the direction $d$ and their weights are shown in
 Fig.~\ref{fig:Secondary-filter}. The complete 2-D CDEF filter is expressed as
 \begin{align}
@@ -335,11 +332,14 @@ the exponent of $2^{D-\lfloor{\log_{2}S}\rfloor}$ in (\ref{eq:constraint-functio
 becomes negative.  For instance, if for chroma $S^{(p)}=15$ and the luma damping is $3$,
 the chroma damping shall also be $3$ (and not 2) because $\left\lfloor\log_2 S^{(p)}\right\rfloor=3$.
 
-For higher bit depth (more than 8 bits), $S^{(p)}$ and $S^{(s)}$ are scaled according to
+
+For bit depths greater than 8 bits, $S^{(p)}$ and $S^{(s)}$ are scaled according to
 the extra bit depth, and $D$ is offset accordingly. For example, 12-bit
 content can have $S^{(p)}$ values of $0$, $16$, $32$, $...$, $240$, and
-$D$ ranges from $7$ to $10$.  Picking the optimal
-damping value is less critical for compression gains than picking the
+$D$ ranges from $7$ to $10$. The strengths are scaled up after selecting the
+primary filter taps, so the taps still alternate, even though the scaling makes
+all values of $S^{(p)}$ even.  Picking the optimal damping value is less
+critical than picking the
 optimal strengths.  $S^{(p)}$ and $S^{(s)}$ are chosen independently for
 luma and chroma.
 
@@ -365,17 +365,18 @@ Some CDEF parameters are signaled at the frame level, and some
 may be signaled at the filter block level.  The following is
 signaled at the frame level: the damping $D$ (2 bit), the number of
 bits used for filter block signaling (0-3, 2~bits), and a list of 1, 2,
-4 or 8 presets.  One preset contains the luma and chroma primary strengths (4
+4 or 8 \textit{presets}.  One preset contains the luma and chroma primary strengths (4
 bits each), the luma and chroma secondary
-strengths (2~bits each), as well as the luma and chroma skip
-condition bits, for a total of 14 bits per
+strengths (2~bits each), as well as the luma and chroma \textit{skip
+condition bits}, for a total of 14 bits per
 preset.  For each
-filter block, 0 to 3 bits are used to indicate which of the preset is used.
+filter block, 0 to 3 bits are used to indicate which preset is used.
 The filter
-parameters are only coded for filter blocks that are not completely
-skipped (no coded residual).  Such skipped filter blocks have CDEF disabled.
-Similarly, any skipped coding block within a filter block has filtering
-disabled unless the skip condition bit is set for that filter block.
+parameters are only coded for filter blocks that have some coded residual.
+Such ``skipped" filter blocks have CDEF disabled.
+In filter blocks that do have some coded residual, any $8\times 8$ block with
+no coded residual also has filtering disabled unless the skip condition bit is set
+in that filter block's preset.
 
 Since the skip condition flag would be redundant in the case when both
 the primary and secondary filter strengths are $0$, this combination
@@ -384,7 +385,7 @@ block shall be filtered with a primary filter strength equal to $19$,
 a secondary filter strength equal to $7$, and the skip condition still set.
 
 When the chroma subsampling differs horizontally and vertically,
-e.g. 4:2:2 video, the filter is disabled for chroma, and the chroma
+e.g., for 4:2:2 video, the filter is disabled for chroma, and the chroma
 primary strength, the chroma skip condition flag and the chroma
 secondary strength are not signaled.
 
@@ -463,7 +464,7 @@ the search complexity by only considering a subset of the 128 possible presets.
 This results in only a small loss ($<0.1\%$ BD-rate) in quality.
 
 The damping value may be determined from
-the quantizer alone (larger damping value for larger quantizer).
+the quantizer alone, with larger damping values used for larger quantizers.
 
 \section{Results}
 \label{sec:results}
@@ -484,7 +485,7 @@ tested configuration is the one with the smallest BD-rate improvement, we
 believe the visual improvement is higher than the BD-rate results suggest. 
 
 The objective results show that CDEF performs better when encoding with fewer tools and
-simpler search algorithms. In some sense, CDEF "competes"
+simpler search algorithms. In some sense, CDEF ``competes"
 for the same gains as some other coding tools. Considering that CDEF is significantly
 less complex to encode than many of the AV1 tools, it provides a good way of reducing
 the complexity of an encoder. 
